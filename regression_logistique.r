@@ -85,9 +85,12 @@ multinomial_logistic_regression <- function(X, y, alpha = 0.01, num_iters = 1000
   #' @return Liste contenant les paramètres optimisés et l'historique des coûts
 
   # Initialisation des paramètres
-  K <- length(unique(y))
+  classes_uniques <- unique(y)
+  K <- length(classes_uniques)
   n <- ncol(X)
   theta <- matrix(0, nrow = n, ncol = K)
+  colnames(theta) <- classes_uniques
+  rownames(theta) <- colnames(X)
 
   # Optimisation des paramètres pour chaque classe
   for (k in 1:K) {
