@@ -1,0 +1,79 @@
+:root {
+  /* Palette de couleurs */
+  --color-bg: #fffff8;           /* Fond général */
+  --color-primary: #4b0082;      /* Indigo pour les boutons et les éléments principaux */
+  --color-secondary: #7f00ff;    /* Violet pour des éléments de contraste */
+  --color-accent: #48c9b0;       /* Vert d'accent pour les éléments interactifs */
+  --color-text: #2c3e50;         /* Texte principal */
+  --color-subtext: #6c757d;      /* Texte secondaire, moins important */
+  --color-border: #d1d9e6;       /* Couleur de bordure pour encadrer les sections */
+
+  /* Typographie */
+  --font-primary: 'Arial', sans-serif;
+  --font-heading: 'Helvetica Neue', sans-serif;
+}
+
+body {
+  background-color: var(--color-bg);
+  font-family: var(--font-primary);
+  color: var(--color-text);
+}
+
+h1, h2, h3, h4, h5, h6 {
+  font-family: var(--font-heading);
+  color: var(--color-text);
+  font-weight: bold;
+}
+
+h4 {
+  color: var(--color-primary);
+}
+
+#run_model {
+  background-color: var(--color-primary);
+  color: white;
+  font-weight: bold;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+#run_model:hover {
+  background-color: var(--color-secondary);
+}
+
+.sidebar-panel, .main-panel {
+  background-color: var(--color-secondary);
+  border: 1px solid var(--color-border);
+  border-radius: 8px;
+  padding: 20px;
+  margin: 10px 0;
+}
+
+a {
+  color: var(--color-accent);
+  text-decoration: none;
+}
+
+a:hover {
+  color: var(--color-secondary);
+}
+
+table {
+  border: 1px solid var(--color-border);
+  border-collapse: collapse;
+  width: 100%;
+}
+
+th, td {
+  border: 1px solid var(--color-border);
+  padding: 8px;
+  text-align: left;
+}
+
+th {
+  background-color: var(--color-primary);
+  color: white;
+}
+
