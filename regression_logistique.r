@@ -46,7 +46,9 @@ LogisticRegression <- R6Class("LogisticRegression",
 
     # Fonction d'apprentissage
     fit = function(X, y) {
-      self$theta <- self$multinomial_logistic_regression(X, y)
+      new_model <- self$clone()
+      new_model$theta <- self$multinomial_logistic_regression(X, y)
+      return(new_model)
     },
 
     # Fonction de prédiction
@@ -149,11 +151,8 @@ X <- data.frame(
 y <- c(0, 0, 1, 1, 2)
 
 model <- LogisticRegression$new()
-model$fit(X, y)
-# TODO : il faudrait que $fit() ne modifie pas model
-# ligne à avoir : model_fitted <- model$fit(X, y)
-
-# print(model$theta)
+fitted_model <- model$fit(X, y)
+print(fitted_model$theta)
 
 X_pred <- data.frame(
   color = c("red", "blue", "green"),
@@ -161,5 +160,5 @@ X_pred <- data.frame(
   weight = c(68, 78, 88),
   stringsAsFactors = TRUE
 )
-predictions <- model$predict(X_pred)
+predictions <- fitted_model$predict(X_pred)
 print(predictions)
