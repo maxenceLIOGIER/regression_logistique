@@ -81,16 +81,6 @@ LogisticRegression <- R6Class("LogisticRegression",
       return(1 / (1 + exp(-z)))
     },
 
-    # Fonction de coût
-    fct_cout = function(X, y, theta) {
-      #' @param theta : vecteur des paramètres
-      #' @return coût de la régression logistique
-      m <- length(y)
-      h <- private$sigmoid(X %*% theta)
-      cost <- (-1 / m) * sum(y * log(h) + (1 - y) * log(1 - h))
-      return(cost)
-    },
-
     # Fonction de descente de gradient
     descente_gradient = function(X, y, theta) {
       #' @param X : matrice des caractéristiques
