@@ -34,7 +34,7 @@ LogisticRegression <- R6Class("LogisticRegression",
     },
 
     # Fonction de descente de gradient
-    gradient_descent = function(X, y, theta) {
+    descente_gradient = function(X, y, theta) {
       #' @param X : matrice des caractéristiques
       #' @param y : vecteur des étiquettes
       #' @param theta : vecteur des paramètres
@@ -80,6 +80,10 @@ LogisticRegression <- R6Class("LogisticRegression",
       # Combinaison des variables encodées et normalisées
       X <- cbind(quali_encoded, quanti_normalized)
 
+      # Ajout d'une colonne d'intercept
+      X <- cbind(1, X)
+      colnames(X)[1] <- "intercept"
+
       return(X)
     },
 
@@ -104,7 +108,7 @@ LogisticRegression <- R6Class("LogisticRegression",
       # Optimisation des paramètres pour chaque classe
       for (k in 1:K) {
         y_k <- ifelse(y == classes_uniques[k], 1, 0) # Encodage one-hot
-        result <- self$gradient_descent(X_new, y_k, theta[, k])
+        result <- self$descente_gradient(X_new, y_k, theta[, k])
         theta[, k] <- result$theta
       }
 
@@ -114,6 +118,26 @@ LogisticRegression <- R6Class("LogisticRegression",
     # Fonction d'apprentissage
     fit = function(X, y) {
       self$theta <- self$multinomial_logistic_regression(X, y)
+    },
+
+    # Fonction de prédiction
+    predict = function(X) {
+      # Préparation de la matrice X
+      X_new <- self$prepare_X(X)
+
+      # Calculer les scores pour chaque classe
+      scores <- X_new %*% self$theta
+
+      # Appliquer la fonction softmax pour obtenir les probabilités
+      softmax <- function(x) {
+        exp(x) / rowSums(exp(x))
+      }
+      probabilities <- softmax(scores)
+
+      # Prédire la classe avec la probabilité la plus élevée
+      predictions <- apply(probabilities, 1, which.max)
+
+      return(predictions)
     }
   )
 )
@@ -130,4 +154,16 @@ y <- c(0, 0, 1, 1, 2)
 
 model <- LogisticRegression$new()
 model$fit(X, y)
-print(model$theta)
+# TODO : il faudrait que $fit() ne modifie pas model
+# ligne à avoir : model_fitted <- model$fit(X, y)
+
+# print(model$theta)
+
+X_pred <- data.frame(
+  color = c("red", "blue", "green"),
+  height = c(155, 175, 185),
+  weight = c(68, 78, 88),
+  stringsAsFactors = TRUE
+)
+predictions <- model$predict(X_pred)
+print(predictions)
