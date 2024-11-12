@@ -16,6 +16,64 @@ LogisticRegression <- R6Class("LogisticRegression",
       self$alpha <- alpha
     },
 
+    # Modèle de régression logistique multinomiale
+    multinomial_logistic_regression = function(X, y) {
+      #' @param X data.frame des caractéristiques
+      #'          peut contenir des variables qualitatives et quantitatives
+      #' @param y Vecteur des étiquettes = variable cible
+      #' @return Liste des paramètres optimisés et de l'historique des coûts
+
+      # Préparation de la matrice X
+      X_new <- private$prepare_X(X)
+
+      # Initialisation des paramètres
+      classes_uniques <- unique(y)
+      K <- length(classes_uniques)
+      n <- ncol(X_new)
+      theta <- matrix(0, nrow = n, ncol = K)
+      colnames(theta) <- classes_uniques
+      rownames(theta) <- colnames(X_new)
+
+      # Optimisation des paramètres pour chaque classe
+      for (k in 1:K) {
+        y_k <- ifelse(y == classes_uniques[k], 1, 0) # Encodage one-hot
+        result <- private$descente_gradient(X_new, y_k, theta[, k])
+        theta[, k] <- result$theta
+      }
+
+      return(theta)
+    },
+
+    # Fonction d'apprentissage
+    fit = function(X, y) {
+      self$theta <- self$multinomial_logistic_regression(X, y)
+    },
+
+    # Fonction de prédiction
+    predict = function(X) {
+      # Préparation de la matrice X
+      X_new <- private$prepare_X(X)
+
+      # Calculer les scores pour chaque classe
+      scores <- X_new %*% self$theta
+
+      # Appliquer la fonction softmax pour obtenir les probabilités
+      softmax <- function(x) {
+        exp(x) / rowSums(exp(x))
+      }
+      probabilities <- softmax(scores)
+
+      # Prédire la classe avec la probabilité la plus élevée
+      predictions <- apply(probabilities, 1, which.max)
+
+      # prédictions sous forme de dataframe
+      predictions <- data.frame(predictions)
+
+      return(predictions)
+    }
+  ),
+
+  private = list(
     # Fonction sigmoïde
     sigmoid = function(z) {
       #' @param z : vecteur ou matrice
@@ -28,7 +86,7 @@ LogisticRegression <- R6Class("LogisticRegression",
       #' @param theta : vecteur des paramètres
       #' @return coût de la régression logistique
       m <- length(y)
-      h <- self$sigmoid(X %*% theta)
+      h <- private$sigmoid(X %*% theta)
       cost <- (-1 / m) * sum(y * log(h) + (1 - y) * log(1 - h))
       return(cost)
     },
@@ -41,7 +99,7 @@ LogisticRegression <- R6Class("LogisticRegression",
       #' @return liste des paramètres optimisés et de l'historique des coûts
       m <- nrow(X)
       for (i in 1:self$nb_iters) {
-        h <- self$sigmoid(X %*% theta)
+        h <- private$sigmoid(X %*% theta)
         gradient <- t(X) %*% (h - y) / m
         theta <- theta - self$alpha * gradient
       }
@@ -65,7 +123,7 @@ LogisticRegression <- R6Class("LogisticRegression",
       #' @return matrice X des caractéristiques
 
       # Déterminer les variables qualitatives et quantitatives
-      types_variables <- self$type_variable(df)
+      types_variables <- private$type_variable(df)
       quali <- types_variables$qualitatives
       quanti <- types_variables$quantitatives
 
@@ -85,62 +143,10 @@ LogisticRegression <- R6Class("LogisticRegression",
       colnames(X)[1] <- "intercept"
 
       return(X)
-    },
-
-    # Modèle de régression logistique multinomiale
-    multinomial_logistic_regression = function(X, y) {
-      #' @param X data.frame des caractéristiques
-      #'          peut contenir des variables qualitatives et quantitatives
-      #' @param y Vecteur des étiquettes = variable cible
-      #' @return Liste des paramètres optimisés et de l'historique des coûts
-
-      # Préparation de la matrice X
-      X_new <- self$prepare_X(X)
-
-      # Initialisation des paramètres
-      classes_uniques <- unique(y)
-      K <- length(classes_uniques)
-      n <- ncol(X_new)
-      theta <- matrix(0, nrow = n, ncol = K)
-      colnames(theta) <- classes_uniques
-      rownames(theta) <- colnames(X_new)
-
-      # Optimisation des paramètres pour chaque classe
-      for (k in 1:K) {
-        y_k <- ifelse(y == classes_uniques[k], 1, 0) # Encodage one-hot
-        result <- self$descente_gradient(X_new, y_k, theta[, k])
-        theta[, k] <- result$theta
-      }
-
-      return(theta)
-    },
-
-    # Fonction d'apprentissage
-    fit = function(X, y) {
-      self$theta <- self$multinomial_logistic_regression(X, y)
-    },
-
-    # Fonction de prédiction
-    predict = function(X) {
-      # Préparation de la matrice X
-      X_new <- self$prepare_X(X)
-
-      # Calculer les scores pour chaque classe
-      scores <- X_new %*% self$theta
-
-      # Appliquer la fonction softmax pour obtenir les probabilités
-      softmax <- function(x) {
-        exp(x) / rowSums(exp(x))
-      }
-      probabilities <- softmax(scores)
-
-      # Prédire la classe avec la probabilité la plus élevée
-      predictions <- apply(probabilities, 1, which.max)
-
-      return(predictions)
     }
   )
 )
+
 
 ## Exemple d'utilisation
 set.seed(123)
