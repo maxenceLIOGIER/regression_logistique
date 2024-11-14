@@ -1,5 +1,4 @@
 library(R6)
-# library(devtools)
 
 # Définition de la classe LogisticRegression
 LogisticRegression <- R6Class("LogisticRegression",
@@ -7,6 +6,7 @@ LogisticRegression <- R6Class("LogisticRegression",
     theta = NULL,
     nb_iters = NULL,
     alpha = NULL,
+    summary_values = c(ll = 0, aic = 0, pseudo_r2 = 0),
 
     # Initialisation de la classe
     initialize = function(nb_iters = 1000, alpha = 0.01) {
@@ -50,7 +50,13 @@ LogisticRegression <- R6Class("LogisticRegression",
       #' @description entraîner le modèle de régression logistique
       #' @return nouveau modèle, entraîné sur les données X et y
       new_model <- self$clone()
+
       new_model$theta <- self$multinomial_logistic_regression(X, y)
+
+      new_model$summary_values["ll"] <- new_model$calcul_log_likelihood(X, y)
+      new_model$summary_values["aic"] <- new_model$Calcul_AIC(X, y)
+      new_model$summary_values["pseudo_r2"] <- new_model$calcul_pseudo_r2(X, y)
+
       return(new_model)
     },
 
@@ -106,18 +112,58 @@ LogisticRegression <- R6Class("LogisticRegression",
       return(list(accuracy = accuracy, precision = precision, recall = recall, f1_score = f1_score))
     },
 
-    summary = function(X, y) {
+    summary = function() {
       #' @description afficher un résumé des métriques du modèle
       #' @return résumé des métriques
 
       # Il faudrait intégrer les coefficients de la régression et les p-values
 
-      aic <- private$Calcul_AIC(X, y)
-      pseudo_r2 <- private$calcul_pseudo_r2(X, y)
-      cat("AIC:", aic, "\n")
-      cat("McFadden's R²:", pseudo_r2, "\n")
+      cat("Log-likelihood:", self$summary_values["ll"], "\n")
+      cat("AIC:", self$summary_values["aic"], "\n")
+      cat("Pseudo R² de McFadden:", self$summary_values["pseudo_r2"], "\n")
+    },
+
+    # Fonction pour calculer la log-vraisemblance
+    calcul_log_likelihood = function(X, y) {
+      #' @param X : matrice des caractéristiques
+      #' @param y : vecteur des étiquettes
+      #' @description calculer la log-vraisemblance du modèle
+
+      probabilities <- self$predict_proba(X)
+      # calculer les proba sur l'échantillon d'apprentissage permet
+      # de mesurer à quel point le modèle s'ajuste aux données
+
+      log_likelihood <- 0
+      for (i in 1:nrow(X)) {
+        log_likelihood <- log_likelihood + log(probabilities[i, y[i] + 1])
+        # hypothèse : les classes sont numérotées de 0 à K-1
+      }
+      return(log_likelihood)
+    },
+
+    # Fonction pour calculer l'AIC (Akaike Information Criterion)
+    Calcul_AIC = function(X, y) {
+      #' @description calculer l'AIC du modèle
+      #' l'AIC sert à comparer des modèles, en pénalisant le nb de paramètres
+
+      log_likelihood <- self$summary_values["ll"]
+      k <- length(self$theta) # nombre de paramètres
+      aic <- 2*k - 2*log_likelihood
+      return(aic)
+    },
+
+    # Fonction pour calculer le pseudo R² de McFadden
+    calcul_pseudo_r2 = function(X, y) {
+      #' @description calculer le pseudo R² de McFadden
+      #' @return valeur du pseudo R²
+
+      null_deviance <- -2 * sum(y * log(mean(y))) # vérifier formule
+      residual_deviance <- -2 * self$summary_values["ll"]
+      pseudo_r2 <- 1 - (residual_deviance / null_deviance)
+      return(pseudo_r2)
     }
   ),
+
 
   private = list(
     # Fonction sigmoïde
@@ -184,41 +230,13 @@ LogisticRegression <- R6Class("LogisticRegression",
       # Combinaison des variables encodées et normalisées
       X <- cbind(quali_encoded, quanti_normalized)
 
-      # Ajout d'une colonne d'intercept
-      X <- cbind(1, X)
-      colnames(X)[1] <- "intercept"
+      # Ajout d'une colonne d'intercept, si n'est pas déjà présente
+      if (sum(colnames(X) == "intercept") == 0) {
+        X <- cbind(1, X)
+        colnames(X)[1] <- "intercept"
+      }
 
       return(X)
-    },
-
-    # Fonction pour calculer la log-vraisemblance
-    calcul_log_likelihood = function(X, y) {
-      #' @description calculer la log-vraisemblance du modèle
-      probabilities <- self$predict_proba(X)
-      log_likelihood <- sum(y * log(probabilities) + (1 - y) * log(1 - probabilities))
-      return(log_likelihood)
-    },
-
-    # Fonction pour calculer l'AIC (Akaike Information Criterion)
-    Calcul_AIC = function(X, y) {
-      #' @description calculer l'AIC du modèle
-      #' l'AIC sert à comparer des modèles, en pénalisant le nb de paramètres
-
-      log_likelihood <- private$calcul_log_likelihood(X, y)
-      k <- length(self$theta) # nombre de paramètres
-      aic <- 2*k - 2*log_likelihood
-      return(aic)
-    },
-
-    # Fonction pour calculer le pseudo R² de McFadden
-    calcul_pseudo_r2 = function(X, y) {
-      #' @description calculer le pseudo R² de McFadden
-      #' @return valeur du pseudo R²
-
-      null_deviance <- sum((y - mean(y))^2)
-      residual_deviance <- -2 * private$calcul_log_likelihood(X, y)
-      pseudo_r2 <- 1 - (residual_deviance / null_deviance)
-      return(pseudo_r2)
     }
   )
 )
@@ -246,12 +264,9 @@ model <- LogisticRegression$new()
 model <- model$fit(X_train, y_train)
 predictions <- model$predict(X_test)
 
-metrics <- model$test(y_test, predictions, confusion_matrix = TRUE)
+print(model$test(y_test, predictions, confusion_matrix = TRUE))
 
-glm_model <- glm(TenYearCHD ~ ., data = data[index, ], family = binomial)
-summary(glm_model)
+model$summary()
 
-null_deviance <- glm_model$null.deviance
-residual_deviance <- glm_model$deviance
-mcfadden_r2 <- 1 - (residual_deviance / null_deviance)
-cat("McFadden's R²:", mcfadden_r2)
+# glm_model <- glm(TenYearCHD ~ ., data = data[index, ], family = binomial)
+# summary(glm_model)
