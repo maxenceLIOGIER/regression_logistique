@@ -104,6 +104,18 @@ LogisticRegression <- R6Class("LogisticRegression",
       }
 
       return(list(accuracy = accuracy, precision = precision, recall = recall, f1_score = f1_score))
+    },
+
+    summary = function(X, y) {
+      #' @description afficher un résumé des métriques du modèle
+      #' @return résumé des métriques
+
+      # Il faudrait intégrer les coefficients de la régression et les p-values
+
+      aic <- private$Calcul_AIC(X, y)
+      pseudo_r2 <- private$calcul_pseudo_r2(X, y)
+      cat("AIC:", aic, "\n")
+      cat("McFadden's R²:", pseudo_r2, "\n")
     }
   ),
 
@@ -177,6 +189,36 @@ LogisticRegression <- R6Class("LogisticRegression",
       colnames(X)[1] <- "intercept"
 
       return(X)
+    },
+
+    # Fonction pour calculer la log-vraisemblance
+    calcul_log_likelihood = function(X, y) {
+      #' @description calculer la log-vraisemblance du modèle
+      probabilities <- self$predict_proba(X)
+      log_likelihood <- sum(y * log(probabilities) + (1 - y) * log(1 - probabilities))
+      return(log_likelihood)
+    },
+
+    # Fonction pour calculer l'AIC (Akaike Information Criterion)
+    Calcul_AIC = function(X, y) {
+      #' @description calculer l'AIC du modèle
+      #' l'AIC sert à comparer des modèles, en pénalisant le nb de paramètres
+
+      log_likelihood <- private$calcul_log_likelihood(X, y)
+      k <- length(self$theta) # nombre de paramètres
+      aic <- 2*k - 2*log_likelihood
+      return(aic)
+    },
+
+    # Fonction pour calculer le pseudo R² de McFadden
+    calcul_pseudo_r2 = function(X, y) {
+      #' @description calculer le pseudo R² de McFadden
+      #' @return valeur du pseudo R²
+
+      null_deviance <- sum((y - mean(y))^2)
+      residual_deviance <- -2 * private$calcul_log_likelihood(X, y)
+      pseudo_r2 <- 1 - (residual_deviance / null_deviance)
+      return(pseudo_r2)
     }
   )
 )
@@ -206,4 +248,10 @@ predictions <- model$predict(X_test)
 
 metrics <- model$test(y_test, predictions, confusion_matrix = TRUE)
 
-print(f1_score)
+glm_model <- glm(TenYearCHD ~ ., data = data[index, ], family = binomial)
+summary(glm_model)
+
+null_deviance <- glm_model$null.deviance
+residual_deviance <- glm_model$deviance
+mcfadden_r2 <- 1 - (residual_deviance / null_deviance)
+cat("McFadden's R²:", mcfadden_r2)
