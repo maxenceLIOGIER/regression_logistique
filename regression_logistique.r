@@ -21,7 +21,8 @@ LogisticRegression <- R6Class("LogisticRegression",
       #' @param X data.frame des caractéristiques
       #'          peut contenir des variables qualitatives et quantitatives
       #' @param y Vecteur des étiquettes = variable cible
-      #' @return Liste des paramètres optimisés et de l'historique des coûts
+      #' @description trouver paramètres optimaux de la régression logistique
+      #' @return matrice des paramètres optimisés
 
       # Préparation de la matrice X
       X_new <- private$prepare_X(X)
@@ -46,13 +47,16 @@ LogisticRegression <- R6Class("LogisticRegression",
 
     # Fonction d'apprentissage
     fit = function(X, y) {
+      #' @description entraîner le modèle de régression logistique
+      #' @return nouveau modèle, entraîné sur les données X et y
       new_model <- self$clone()
       new_model$theta <- self$multinomial_logistic_regression(X, y)
       return(new_model)
     },
 
-    # Fonction de prédiction
-    predict = function(X) {
+    predict_proba = function(X) {
+      #' @description prédire probas d'appartenance des individus aux classes
+
       # Préparation de la matrice X
       X_new <- private$prepare_X(X)
 
@@ -65,12 +69,18 @@ LogisticRegression <- R6Class("LogisticRegression",
       }
       probabilities <- softmax(scores)
 
+      return(probabilities)
+    },
+
+    # Fonction de prédiction
+    predict = function(X) {
+      #' @description prédire les classes des individus
+
+      # Calcul des probabilités d'appartenance aux classes
+      probabilities <- self$predict_proba(X)
+
       # Prédire la classe avec la probabilité la plus élevée
       predictions <- apply(probabilities, 1, which.max)
-
-      # prédictions sous forme de dataframe
-      predictions <- data.frame(predictions)
-
       return(predictions)
     }
   ),
@@ -88,7 +98,8 @@ LogisticRegression <- R6Class("LogisticRegression",
       #' @param X : matrice des caractéristiques
       #' @param y : vecteur des étiquettes
       #' @param theta : vecteur des paramètres
-      #' @return liste des paramètres optimisés et de l'historique des coûts
+      #' @return liste des paramètres optimisés
+      #' @description implémente l'algorithme de descente de gradient
       m <- nrow(X)
       for (i in 1:self$nb_iters) {
         h <- private$sigmoid(X %*% theta)
@@ -113,6 +124,7 @@ LogisticRegression <- R6Class("LogisticRegression",
     prepare_X = function(df) {
       #' @param df : data.frame contenant les données
       #' @return matrice X des caractéristiques
+      #' @description encode variables quali et normalise les quanti + intercept
 
       # Déterminer les variables qualitatives et quantitatives
       types_variables <- private$type_variable(df)
@@ -120,12 +132,20 @@ LogisticRegression <- R6Class("LogisticRegression",
       quanti <- types_variables$quantitatives
 
       # Encodage one-hot des variables qualitatives
-      quali_data <- df[, quali, drop = FALSE]
-      quali_encoded <- model.matrix(~ . - 1, data = quali_data)
+      if (length(quali) > 0) {
+        quali <- df[, quali, drop = FALSE]
+        quali_encoded <- model.matrix(~ . - 1, data = quali_data)
+      } else {
+        quali_encoded <- matrix(0, nrow = nrow(df), ncol = 0)
+      }
 
       # Normalisation des variables quantitatives
-      quanti_data <- df[, quanti, drop = FALSE]
-      quanti_normalized <- scale(quanti_data)
+      if (length(quanti) > 0) {
+        quanti_data <- df[, quanti, drop = FALSE]
+        quanti_normalized <- scale(quanti_data)
+      } else {
+        quanti_normalized <- matrix(0, nrow = nrow(df), ncol = 0)
+      }
 
       # Combinaison des variables encodées et normalisées
       X <- cbind(quali_encoded, quanti_normalized)
@@ -140,25 +160,32 @@ LogisticRegression <- R6Class("LogisticRegression",
 )
 
 
-## Exemple d'utilisation
+# Exemple d'utilisation
 set.seed(123)
-X <- data.frame(
-  color = c("red", "blue", "green", "blue", "red"),
-  height = c(150, 160, 170, 180, 190),
-  weight = c(65, 70, 75, 80, 85),
-  stringsAsFactors = TRUE
-)
-y <- c(0, 0, 1, 1, 2)
+setwd("C:/Users/maxen/Documents/_SISE/Prog Stat sous R/Projet")
+data <- read.csv("framingham.csv")
+head(data)
+
+# supprimer lignes manquantes
+data <- na.omit(data)
+
+X <- data[, -c(16)]
+y <- data$TenYearCHD
+
+index <- sample(1:nrow(data), nrow(data) * 0.7)
+X_train <- X[index, ]
+y_train <- y[index]
+X_test <- X[-index, ]
+y_test <- y[-index]
 
 model <- LogisticRegression$new()
-fitted_model <- model$fit(X, y)
-print(fitted_model$theta)
+model <- model$fit(X_train, y_train)
+predictions <- model$predict(X_test)
 
-X_pred <- data.frame(
-  color = c("red", "blue", "green"),
-  height = c(155, 175, 185),
-  weight = c(68, 78, 88),
-  stringsAsFactors = TRUE
-)
-predictions <- fitted_model$predict(X_pred)
-print(predictions)
+confusion_matrix <- table(predictions, y_test)
+confusion_matrix
+
+precision <- confusion_matrix[2, 2] / sum(confusion_matrix[, 2])
+recall <- confusion_matrix[2, 2] / sum(confusion_matrix[2, ])
+f1_score <- 2 * precision * recall / (precision + recall)
+print(f1_score)
