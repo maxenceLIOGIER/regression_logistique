@@ -57,6 +57,12 @@ LogisticRegression <- R6Class("LogisticRegression",
       new_model$summary_values["aic"] <- new_model$Calcul_AIC(X, y)
       new_model$summary_values["pseudo_r2"] <- new_model$calcul_pseudo_r2(X, y)
 
+      # Pour ces 3 métriques, j'ai été obligé de passer les fonctions en public.
+      # Je n'arrive pas à faire marcher le code lorsque je combine new_model et private
+      # normalement il faudrait ceci : new_model$private$calcul_log_likelihood(X, y)
+
+      # reste à calculer les p-values et les coefficients de la régression
+
       return(new_model)
     },
 
