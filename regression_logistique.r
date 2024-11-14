@@ -82,6 +82,28 @@ LogisticRegression <- R6Class("LogisticRegression",
       # Prédire la classe avec la probabilité la plus élevée
       predictions <- apply(probabilities, 1, which.max)
       return(predictions)
+    },
+
+    # Fonction pour évaluer le modèle
+    test = function(y_true, y_pred, confusion_matrix = FALSE) {
+      #' @param y_true : vecteur des vraies étiquettes
+      #' @param y_pred : vecteur des étiquettes prédites
+      #' @param confusion_matrix : booléen pour afficher la matrice de confusion
+      #' @return liste des métriques et matrice de confusion si demandée
+
+      # metriques
+      accuracy <- sum(y_true == y_pred) / length(y_true)
+      precision <- sum(y_true == y_pred & y_true == 1) / sum(y_pred == 1)
+      recall <- sum(y_true == y_pred & y_true == 1) / sum(y_true == 1)
+      f1_score <- 2 * precision * recall / (precision + recall)
+
+      # Matrice de confusion
+      if (confusion_matrix) {
+        confusion_matrix <- table(y_pred, y_true)
+        print(confusion_matrix)
+      }
+
+      return(list(accuracy = accuracy, precision = precision, recall = recall, f1_score = f1_score))
     }
   ),
 
@@ -182,10 +204,6 @@ model <- LogisticRegression$new()
 model <- model$fit(X_train, y_train)
 predictions <- model$predict(X_test)
 
-confusion_matrix <- table(predictions, y_test)
-confusion_matrix
+metrics <- model$test(y_test, predictions, confusion_matrix = TRUE)
 
-precision <- confusion_matrix[2, 2] / sum(confusion_matrix[, 2])
-recall <- confusion_matrix[2, 2] / sum(confusion_matrix[2, ])
-f1_score <- 2 * precision * recall / (precision + recall)
 print(f1_score)
