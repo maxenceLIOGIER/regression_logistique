@@ -1,42 +1,118 @@
-fluidPage(
-  # Titre de l'application, affiché en haut
-  includeCSS("www/style.css"),
-  titlePanel("Application de Régression Logistique Multinomiale"),
-  
-  # Disposition en deux parties : sidebar (barre latérale) et main (contenu principal)
-  sidebarLayout(
-    
-    # Barre latérale pour les contrôles de l'utilisateur
-    sidebarPanel(
-      # Import d'un fichier de données (CSV ou XLSX)
-      fileInput("datafile", "Charger un fichier de données (CSV ou XLSX)"),
+
+ui <- dashboardPage(
+  dashboardHeader(title = "Régression Logistique Multinomiale"),
+  dashboardSidebar(
+    sidebarMenu(
+      menuItem("Accueil", tabName = "accueil", icon = icon("home")),
+      menuItem("Lecture des données", tabName = "menu1", icon = icon("file-upload")),
+      menuItem("Statistiques et Visualisation", tabName = "menu2", icon = icon("chart-line")),
+      menuItem("Modélisation et Prédiction", tabName = "menu3", icon = icon("cogs"))
+    )
+  ),
+  dashboardBody(
+    tabItems(
+      # Page d'accueil
+      tabItem(tabName = "accueil",
+              fluidRow(
+                box(
+                  title = "Bienvenue", status = "primary", solidHeader = TRUE, width = 12,
+                  h3("Application de Régression Logistique Multinomiale"),
+                  p("Cette application a été conçue pour démontrer les fonctionnalités d’un package 
+                    R dédié à la régression logistique multinomiale."),
+                  p("Voici les fonctionnalités principales :"),
+                  tags$ul(
+                    tags$li("Chargement et exploration des données"),
+                    tags$li("Statistiques descriptives et visualisation"),
+                    tags$li("Modélisation par régression logistique multinomiale"),
+                    tags$li("Prédiction et évaluation du modèle")
+                  ),
+                  p("Utilisez le menu à gauche pour naviguer à travers l'application.")
+                )
+              )
+      ),
       
-      # Sélection de la variable cible pour la régression (affiché dynamiquement)
-      uiOutput("var_target"),  
+      # Menu 1 : Lecture des données
+      tabItem(tabName = "menu1",
+              tabsetPanel(
+                tabPanel("Charger les données", 
+                         fluidRow(
+                           column(6, 
+                                  box(title = "Charger un fichier CSV ou Excel", status = "primary", solidHeader = TRUE, width = NULL,
+                                      fileInput("file", "Importer un fichier CSV ou Excel", 
+                                                accept = c(".csv", ".xls", ".xlsx")),
+                                      checkboxInput("header", "Entête", TRUE),
+                                      selectInput("sep", "Séparateur", choices = c("," = ",", ";" = ";", "Tabulation" = "\t")),
+                                      conditionalPanel(
+                                        condition = "output.showSheetSelector",
+                                        selectInput("sheet_select", "Sélectionner une feuille", choices = NULL)
+                                      ),
+                                      actionButton("load_data", "Charger")
+                                  )
+                           ),
+                           column(6, 
+                                  box(title = "Actions sur les données", status = "warning", solidHeader = TRUE, width = NULL,
+                                      selectInput("factor_column", "Colonnes à convertir en facteur :",
+                                                  choices = NULL, selected = NULL),
+                                      actionButton("convert_to_factor", "Convertir en Facteur"),
+                                      br(),
+                                      selectInput("num_column", "Colonnes à convertir en numérique :",
+                                                  choices = NULL, selected = NULL),
+                                      actionButton("convert_to_numeric", "Convertir en Numérique")
+                                  )
+                           )
+                         ),
+                         fluidRow(
+                           column(12, 
+                                  box(title = "Aperçu des données", status = "info", solidHeader = TRUE, width = NULL,
+                                      DTOutput("data_preview"), style = "overflow-x: auto;"  # Ajout du style pour activer le slider
+                                  )
+                           )
+                         )
+                ),
+                
+                
+                tabPanel("Structure des données",
+                         verbatimTextOutput("data_structure")
+                ),
+                tabPanel("Résumé statistique",
+                         verbatimTextOutput("data_summary")
+                )
+              )
+      ),
       
-      # Sélection des variables explicatives (affiché dynamiquement)
-      uiOutput("var_predictors"),
+      # Menu 2 : Statistiques et visualisation
+      tabItem(tabName = "menu2",
+              tabsetPanel(
+                tabPanel("Corrélation",
+                         plotOutput("correlation_plot")
+                ),
+                tabPanel("Statistiques descriptives",
+                         tableOutput("descriptive_stats")
+                ),
+                tabPanel("Distribution des variables",
+                         selectInput("variable", "Choisir une variable", choices = NULL),
+                         plotOutput("variable_distribution")
+                )
+              )
+      ),
       
-      # Bouton pour lancer la modélisation
-      actionButton("run_model", "Lancer la Modélisation")
-    ),
-    
-    # Contenu principal, affiché en onglets pour organiser les résultats
-    mainPanel(
-      tabsetPanel(
-        
-        # Onglet pour afficher un aperçu des données chargées
-        tabPanel("Aperçu des Données", 
-                 # Affichage d'une table de données interactive avec un "spinner" de chargement
-                 DTOutput("data_preview") %>% withSpinner()),
-        
-        # Onglet pour afficher les résultats de la modélisation
-        tabPanel("Résultats du Modèle", 
-                 h4("Coefficients du modèle :"),  # Titre pour les résultats de régression
-                 tableOutput("model_coefficients")),  # Tableau pour les coefficients
-        
-        # Onglet pour afficher une visualisation de l'importance des variables
-        tabPanel("Visualisation", plotOutput("importance_plot"))  # Graphique d'importance
+      # Menu 3 : Modélisation et prédiction
+      tabItem(tabName = "menu3",
+              tabsetPanel(
+                tabPanel("Préparation des données",
+                         selectInput("target", "Variable cible", choices = NULL),
+                         uiOutput("features_ui"),
+                         actionButton("prepare_data", "Préparer les données")
+                ),
+                tabPanel("Lancer la modélisation",
+                         verbatimTextOutput("model_summary"),
+                         actionButton("run_model", "Lancer la régression logistique")
+                ),
+                tabPanel("Prédiction",
+                         fileInput("new_data", "Importer des données pour la prédiction"),
+                         verbatimTextOutput("prediction_results")
+                )
+              )
       )
     )
   )
