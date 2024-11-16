@@ -104,4 +104,68 @@ server <- function(input, output, session) {
     req(data())
     summary(data())
   })
+  
+  
+  
+  #page 2 statistique et visualisation 
+  
+  # Mise à jour dynamique des colonnes pour les sélections
+  observe({
+    req(data())
+    col_names <- names(data())
+    
+    # Colonnes numériques et catégorielles
+    num_cols <- col_names[sapply(data(), is.numeric)]
+    cat_cols <- col_names[sapply(data(), is.factor) | sapply(data(), is.character)]
+    
+    # Mettre à jour les choix
+    updateSelectInput(session, "variable", choices = col_names, selected = NULL)         # Toutes les colonnes
+    updateSelectInput(session, "numeric_var", choices = num_cols, selected = NULL)      # Numériques
+    updateSelectInput(session, "cat_var", choices = cat_cols, selected = NULL)          # Catégorielles
+    updateSelectInput(session, "cat_var1", choices = cat_cols, selected = NULL)         # Catégorielles
+    updateSelectInput(session, "cat_var2", choices = cat_cols, selected = NULL)         # Catégorielles
+  })
+  
+  # Répartition des variables
+  output$variable_distribution <- renderPlot({
+    req(data(), input$variable)
+    var_data <- data()[[input$variable]]
+    
+    if (is.numeric(var_data)) {
+      ggplot(data(), aes_string(x = input$variable)) +
+        geom_histogram(binwidth = 1, fill = "lightblue", color = "black", alpha = 0.7) +
+        theme_minimal() +
+        labs(title = paste("Répartition de la variable", input$variable), x = input$variable, y = "Fréquence")
+    } else {
+      ggplot(data(), aes_string(x = input$variable)) +
+        geom_bar(fill = "lightgreen", color = "black", alpha = 0.7) +
+        theme_minimal() +
+        labs(title = paste("Répartition de la variable", input$variable), x = input$variable, y = "Effectif")
+    }
+  })
+  
+  # Boxplot des variables numériques
+  output$boxplot_numeric <- renderPlot({
+    req(data(), input$numeric_var, input$cat_var)
+    
+    ggplot(data(), aes_string(x = input$cat_var, y = input$numeric_var)) +
+      geom_boxplot(fill = "lightgreen", alpha = 0.7) +
+      theme_minimal() +
+      labs(title = paste("Boxplot de", input$numeric_var, "par rapport à", input$cat_var), 
+           x = input$cat_var, y = input$numeric_var)
+  })
+  
+  # Relation entre variables catégorielles
+  output$cat_cat_relation <- renderPlot({
+    req(data(), input$cat_var1, input$cat_var2)
+    
+    ggplot(data(), aes_string(x = input$cat_var1, fill = input$cat_var2)) +
+      geom_bar(position = "fill", alpha = 0.7) +
+      theme_minimal() +
+      labs(title = paste("Relation entre", input$cat_var1, "et", input$cat_var2), y = "Proportion")
+  })
 }
+  
+  
+  
+

@@ -81,20 +81,49 @@ ui <- dashboardPage(
       ),
       
       # Menu 2 : Statistiques et visualisation
+      # Menu 2 : Statistiques et visualisation
       tabItem(tabName = "menu2",
               tabsetPanel(
-                tabPanel("Corrélation",
-                         plotOutput("correlation_plot")
+                # Répartition des variables
+                tabPanel("Répartition des variables",
+                         fluidRow(
+                           column(4,
+                                  selectInput("variable", "Choisir une variable", choices = NULL)  # Choix de la variable
+                           ),
+                           column(8,
+                                  plotOutput("variable_distribution")  # Affichage du graphique
+                           )
+                         )
                 ),
-                tabPanel("Statistiques descriptives",
-                         tableOutput("descriptive_stats")
+                
+                # Boxplot des variables numériques
+                tabPanel("Boxplot des variables numériques",
+                         fluidRow(
+                           column(4,
+                                  selectInput("numeric_var", "Choisir une variable numérique", choices = NULL),
+                                  selectInput("cat_var", "Choisir une variable catégorielle", choices = NULL, selected = NULL)
+                           ),
+                           column(8,
+                                  plotOutput("boxplot_numeric")
+                           )
+                         )
                 ),
-                tabPanel("Distribution des variables",
-                         selectInput("variable", "Choisir une variable", choices = NULL),
-                         plotOutput("variable_distribution")
+                
+                # Exploration des variables catégorielles
+                tabPanel("Exploration des variables catégorielles",
+                         fluidRow(
+                           column(4,
+                                  selectInput("cat_var1", "Choisir la première variable catégorielle", choices = NULL),
+                                  selectInput("cat_var2", "Choisir la deuxième variable catégorielle", choices = NULL)
+                           ),
+                           column(8,
+                                  plotOutput("cat_cat_relation")
+                           )
+                         )
                 )
               )
       ),
+      
       
       # Menu 3 : Modélisation et prédiction
       tabItem(tabName = "menu3",
