@@ -4,6 +4,8 @@ source("R/calcul_metriques.R")
 source("R/prepare_x.R")
 source("R/descente_gradient.R")
 source("R/predict_proba.R")
+source("R/print_coeff_reg.R")
+
 
 # Définition de la classe LogisticRegression
 LogisticRegression <- R6Class("LogisticRegression",
@@ -58,7 +60,7 @@ LogisticRegression <- R6Class("LogisticRegression",
 
       # calcul de theta et des metriques
       theta <- self$multinomial_logistic_regression(X, y)
-      ll <- calcul_log_likelihood(X, y)
+      ll <- calcul_log_likelihood(X, y, theta)
       aic <- calcul_aic(X, y, ll, theta)
       pseudo_r2 <- calcul_pseudo_r2(X, y, ll)
 
@@ -78,7 +80,7 @@ LogisticRegression <- R6Class("LogisticRegression",
       #' @description prédire les classes des individus
 
       # Calcul des probabilités d'appartenance aux classes
-      probabilities <- self$predict_proba(X)
+      probabilities <- predict_proba(X, self$theta)
 
       # Prédire la classe avec la probabilité la plus élevée
       predictions <- apply(probabilities, 1, which.max)
@@ -111,11 +113,13 @@ LogisticRegression <- R6Class("LogisticRegression",
       #' @description afficher un résumé des métriques du modèle
       #' @return résumé des métriques
 
-      # Il faudrait intégrer les coefficients de la régression et les p-values
+      # Affichage des coefficients de la régression
+      print_coeff_reg(self$theta)
 
+      # Affichage des métriques
       cat("Log-likelihood:", self$summary_values["ll"], "\n")
       cat("AIC:", self$summary_values["aic"], "\n")
-      cat("Pseudo R² de McFadden:", self$summary_values["pseudo_r2"], "\n")
+      cat("Pseudo R² de McFadden:", round(self$summary_values["pseudo_r2"], 4), "\n")
     }
   )
 )
@@ -125,27 +129,29 @@ LogisticRegression <- R6Class("LogisticRegression",
 set.seed(123)
 setwd("C:/Users/maxen/Documents/_SISE/Prog Stat sous R/Projet")
 data <- read.csv("framingham.csv")
-head(data)
+# head(data)
 
 # supprimer lignes manquantes
 data <- na.omit(data)
 
+# Séparation des données en train et test
 X <- data[, -c(16)]
 y <- data$TenYearCHD
-
-index <- sample(1:nrow(data), nrow(data) * 0.7)
+index <- sample(seq_len(nrow(data)), nrow(data) * 0.7)
 X_train <- X[index, ]
 y_train <- y[index]
 X_test <- X[-index, ]
 y_test <- y[-index]
 
+# Entraînement du modèle
 model <- LogisticRegression$new()
 model <- model$fit(X_train, y_train)
-predictions <- model$predict(X_test)
-
-print(model$test(y_test, predictions, confusion_matrix = TRUE))
-
 model$summary()
 
-# glm_model <- glm(TenYearCHD ~ ., data = data[index, ], family = binomial)
+# Prédiction sur les données test
+predictions <- model$predict(X_test)
+print(model$test(y_test, predictions, confusion_matrix = TRUE))
+
+# data2 <- data[index, ]
+# glm_model <- glm(TenYearCHD ~ ., data = data2, family = binomial)
 # summary(glm_model)

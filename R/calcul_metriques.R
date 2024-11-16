@@ -1,17 +1,17 @@
 source("R/predict_proba.R")
 
 # Fonction pour calculer la log-vraisemblance
-calcul_log_likelihood <- function(X, y) {
+calcul_log_likelihood <- function(X, y, theta) {
   #' @param X : matrice des caractéristiques
   #' @param y : vecteur des étiquettes
   #' @description calculer la log-vraisemblance du modèle
 
-  probabilities <- predict_proba(X)
+  probabilities <- predict_proba(X, theta)
   # calculer les proba sur l'échantillon d'apprentissage permet
   # de mesurer à quel point le modèle s'ajuste aux données
 
   log_likelihood <- 0
-  for (i in 1:nrow(X)) {
+  for (i in seq_len(nrow(X))) {
     log_likelihood <- log_likelihood + log(probabilities[i, y[i] + 1])
     # hypothèse : les classes sont numérotées de 0 à K-1
   }
@@ -32,12 +32,21 @@ calcul_aic <- function(X, y, ll, theta) {
 
 # Fonction pour calculer le pseudo R² de McFadden
 calcul_pseudo_r2 <- function(X, y, ll) {
-  #' @param ll : log-likelyhood du modèle
+  #' @param ll : log-likelihood du modèle
   #' @description calculer le pseudo R² de McFadden
   #' @return valeur du pseudo R²
 
-  null_deviance <- -2 * sum(y * log(mean(y))) # vérifier formule
+  # Calcul de la log-vraisemblance du modèle nul pour multiclasse
+  classes <- unique(y)
+  null_ll <- 0
+  for (class in classes) {
+    p_class <- mean(y == class)
+    null_ll <- null_ll + sum((y == class) * log(p_class))
+  }
+
+  null_deviance <- -2 * null_ll
   residual_deviance <- -2 * ll
   pseudo_r2 <- 1 - (residual_deviance / null_deviance)
+
   return(pseudo_r2)
 }
