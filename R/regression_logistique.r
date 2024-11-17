@@ -14,7 +14,7 @@ LogisticRegression <- R6Class("LogisticRegression",
     dict_coeff = NULL,
     nb_iters = NULL,
     alpha = NULL,
-    summary_values = c(ll = NULL, aic = NULL, pseudo_r2 = NULL),
+    summary_values = c(ll = NULL, aic = NULL), #, pseudo_r2 = NULL),
 
     # Initialisation de la classe
     initialize = function(nb_iters = 1000, alpha = 0.01) {
@@ -66,13 +66,13 @@ LogisticRegression <- R6Class("LogisticRegression",
       # Calcul des métriques
       ll <- calcul_log_likelihood(X, y, theta)
       aic <- calcul_aic(X, y, ll, theta)
-      pseudo_r2 <- calcul_pseudo_r2(X, y, ll)
+      # pseudo_r2 <- calcul_pseudo_r2(X, y, ll))
 
       # Mise à jour des paramètres du modèle
       new_model$theta <- theta
       new_model$summary_values["ll"] <- ll
       new_model$summary_values["aic"] <- aic
-      new_model$summary_values["pseudo_r2"] <- pseudo_r2
+      # new_model$summary_values["pseudo_r2"] <- pseudo_r2
       new_model$dict_coeff <- dict_coeff
 
       return(new_model)
@@ -100,7 +100,6 @@ LogisticRegression <- R6Class("LogisticRegression",
       class_indices <- apply(proba, 1, which.max)
       class_names <- colnames(proba)
       pred <- class_names[class_indices]
-      print(pred)
       return(pred)
     },
 
@@ -155,7 +154,7 @@ LogisticRegression <- R6Class("LogisticRegression",
       # Affichage des métriques
       cat("Log-likelihood:", self$summary_values["ll"], "\n")
       cat("AIC:", self$summary_values["aic"], "\n")
-      cat("Pseudo R² de McFadden:", round(self$summary_values["pseudo_r2"], 4), "\n")
+      # cat("Pseudo R² de McFadden:", round(self$summary_values["pseudo_r2"], 4), "\n")
     }
   )
 )

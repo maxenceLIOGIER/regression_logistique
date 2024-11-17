@@ -6,14 +6,15 @@ calcul_log_likelihood <- function(X, y, theta) {
   #' @param y : vecteur des étiquettes
   #' @description calculer la log-vraisemblance du modèle
 
-  probabilities <- predict_proba(X, theta)
+  proba <- predict_proba(X, theta)
   # calculer les proba sur l'échantillon d'apprentissage permet
   # de mesurer à quel point le modèle s'ajuste aux données
 
   log_likelihood <- 0
   for (i in seq_len(nrow(X))) {
-    log_likelihood <- log_likelihood + log(probabilities[i, y[i] + 1])
-    # hypothèse : les classes sont numérotées de 0 à K-1
+    classe <- y[i]
+    index_classe <- which(levels(y) == classe)
+    log_likelihood <- log_likelihood + log(proba[i, index_classe])
   }
   return(log_likelihood)
 }
@@ -30,23 +31,21 @@ calcul_aic <- function(X, y, ll, theta) {
   return(aic)
 }
 
-# Fonction pour calculer le pseudo R² de McFadden
-calcul_pseudo_r2 <- function(X, y, ll) {
-  #' @param ll : log-likelihood du modèle
-  #' @description calculer le pseudo R² de McFadden
-  #' @return valeur du pseudo R²
+# # Fonction pour calculer le pseudo R² de McFadden
+# calcul_pseudo_r2 <- function(X, y, ll) {
+#   #' @param ll : log-likelihood du modèle
+#   #' @description calculer le pseudo R² de McFadden
+#   #' @return valeur du pseudo R²
 
-  # Calcul de la log-vraisemblance du modèle nul pour multiclasse
-  classes <- unique(y)
-  null_ll <- 0
-  for (class in classes) {
-    p_class <- mean(y == class)
-    null_ll <- null_ll + sum((y == class) * log(p_class))
-  }
+#   # Calcul de la log-vraisemblance du modèle nul pour multiclasse
+#   class_proportions <- table(y) / length(y)
+#   print(class_proportions)
+#   null_ll <- sum(log(class_proportions[y]))
 
-  null_deviance <- -2 * null_ll
-  residual_deviance <- -2 * ll
-  pseudo_r2 <- 1 - (residual_deviance / null_deviance)
+#   null_deviance <- -2 * null_ll
+#   residual_deviance <- -2 * ll
+#   pseudo_r2 <- 1 - (residual_deviance / null_deviance)
 
-  return(pseudo_r2)
-}
+#   return(pseudo_r2)
+# }
+# Cette fonction ne marche pas. Donne des résultats beaucoup trop faibles
