@@ -78,16 +78,30 @@ LogisticRegression <- R6Class("LogisticRegression",
       return(new_model)
     },
 
+    # Fonction pour prédire les probabilités
+    # Cette fct existe déjà dans predict_proba.R
+    # Mais on la redéfinit ici pour qu'elle soit accessible depuis l'objet
+    predict_proba = function(X, theta) {
+      #' @description prédire les probabilités d'appartenance aux classes
+      #' @return matrice des probabilités
+
+      proba <- predict_proba(X_new, theta)
+      return(proba)
+    },
+
     # Fonction de prédiction
     predict = function(X) {
       #' @description prédire les classes des individus
 
       # Calcul des probabilités d'appartenance aux classes
-      probabilities <- predict_proba(X, self$theta)
+      proba <- predict_proba(X, self$theta)
 
       # Prédire la classe avec la probabilité la plus élevée
-      predictions <- apply(probabilities, 1, which.max)
-      return(predictions)
+      class_indices <- apply(proba, 1, which.max)
+      class_names <- colnames(proba)
+      pred <- class_names[class_indices]
+      print(pred)
+      return(pred)
     },
 
     # Fonction pour évaluer le modèle
@@ -98,10 +112,29 @@ LogisticRegression <- R6Class("LogisticRegression",
       #' @return liste des métriques et matrice de confusion si demandée
 
       # metriques
+      # accuracy, facile à calculer
       accuracy <- sum(y_true == y_pred) / length(y_true)
-      precision <- sum(y_true == y_pred & y_true == 1) / sum(y_pred == 1)
-      recall <- sum(y_true == y_pred & y_true == 1) / sum(y_true == 1)
-      f1_score <- 2 * precision * recall / (precision + recall)
+
+      # precision, rappel, f1-score
+      classes <- unique(y_true)
+      precision_list <- c()
+      rappel_list <- c()
+
+      for (classe in classes) {
+        VP <- sum(y_true == classe & y_pred == classe)
+        FP <- sum(y_true != classe & y_pred == classe)
+        FN <- sum(y_true == classe & y_pred != classe)
+
+        precision <- VP / (VP + FP)
+        rappel <- VP / (VP + FN)
+
+        precision_list <- c(precision_list, precision)
+        rappel_list <- c(rappel_list, rappel)
+      }
+
+      precision <- mean(precision_list, na.rm = TRUE)
+      rappel <- mean(rappel_list, na.rm = TRUE)
+      f1_score <- 2 * precision * rappel / (precision + rappel)
 
       # Matrice de confusion
       if (confusion_matrix) {
@@ -109,7 +142,7 @@ LogisticRegression <- R6Class("LogisticRegression",
         print(confusion_matrix)
       }
 
-      return(list(accuracy = accuracy, precision = precision, recall = recall, f1_score = f1_score))
+      return(list(accuracy = accuracy, precision = precision, rappel = rappel, f1_score = f1_score))
     },
 
     summary = function() {
@@ -130,17 +163,12 @@ LogisticRegression <- R6Class("LogisticRegression",
 
 # Exemple d'utilisation
 set.seed(123)
-setwd("C:/Users/maxen/Documents/_SISE/Prog Stat sous R/Projet")
-data <- read.csv("framingham.csv")
-# head(data)
-
-# supprimer lignes manquantes
-data <- na.omit(data)
+data(iris)
 
 # Séparation des données en train et test
-X <- data[, -c(16)]
-y <- data$TenYearCHD
-index <- sample(seq_len(nrow(data)), nrow(data) * 0.7)
+X <- iris[, -c(5)]
+y <- iris$Species
+index <- sample(seq_len(nrow(iris)), nrow(iris) * 0.7)
 X_train <- X[index, ]
 y_train <- y[index]
 X_test <- X[-index, ]
@@ -151,12 +179,12 @@ model <- LogisticRegression$new()
 model <- model$fit(X_train, y_train)
 model$summary()
 
-# # Prédiction sur les données test
-# predictions <- model$predict(X_test)
-# print(model$test(y_test, predictions, confusion_matrix = TRUE))
+# Prédiction sur les données test
+y_pred <- model$predict(X_test)
+print(model$test(y_test, y_pred, confusion_matrix = TRUE))
 
 
 # # Comparaison avec glm
-data2 <- data[index, ]
-glm_model <- glm(TenYearCHD ~ ., data = data2, family = binomial)
-summary(glm_model)
+# data2 <- data[index, ]
+# glm_model <- glm(TenYearCHD ~ ., data = data2, family = binomial)
+# summary(glm_model)

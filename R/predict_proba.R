@@ -13,7 +13,7 @@ predict_proba <- function(X, theta) {
   softmax <- function(x) {
     exp(x) / rowSums(exp(x))
   }
-  probabilities <- softmax(scores)
+  proba <- softmax(scores)
 
-  return(probabilities)
+  return(proba)
 }
