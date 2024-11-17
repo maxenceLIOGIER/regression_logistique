@@ -4,16 +4,17 @@ source("R/calcul_metriques.R")
 source("R/prepare_x.R")
 source("R/descente_gradient.R")
 source("R/predict_proba.R")
-source("R/print_coeff_reg.R")
+source("R/p_values.R")
 
 
 # Définition de la classe LogisticRegression
 LogisticRegression <- R6Class("LogisticRegression",
   public = list(
     theta = NULL,
+    dict_coeff = NULL,
     nb_iters = NULL,
     alpha = NULL,
-    summary_values = c(ll = 0, aic = 0, pseudo_r2 = 0),
+    summary_values = c(ll = NULL, aic = NULL, pseudo_r2 = NULL),
 
     # Initialisation de la classe
     initialize = function(nb_iters = 1000, alpha = 0.01) {
@@ -58,8 +59,11 @@ LogisticRegression <- R6Class("LogisticRegression",
       #' @return nouveau modèle, entraîné sur les données X et y
       new_model <- self$clone()
 
-      # calcul de theta et des metriques
+      # calcul des coeffs
       theta <- self$multinomial_logistic_regression(X, y)
+      dict_coeff <- calcul_p_values(X, theta)
+
+      # Calcul des métriques
       ll <- calcul_log_likelihood(X, y, theta)
       aic <- calcul_aic(X, y, ll, theta)
       pseudo_r2 <- calcul_pseudo_r2(X, y, ll)
@@ -69,8 +73,7 @@ LogisticRegression <- R6Class("LogisticRegression",
       new_model$summary_values["ll"] <- ll
       new_model$summary_values["aic"] <- aic
       new_model$summary_values["pseudo_r2"] <- pseudo_r2
-
-      # reste à calculer les p-values et les coefficients de la régression
+      new_model$dict_coeff <- dict_coeff
 
       return(new_model)
     },
@@ -114,7 +117,7 @@ LogisticRegression <- R6Class("LogisticRegression",
       #' @return résumé des métriques
 
       # Affichage des coefficients de la régression
-      print_coeff_reg(self$theta)
+      print_coeffs(self$dict_coeff)
 
       # Affichage des métriques
       cat("Log-likelihood:", self$summary_values["ll"], "\n")
@@ -148,10 +151,12 @@ model <- LogisticRegression$new()
 model <- model$fit(X_train, y_train)
 model$summary()
 
-# Prédiction sur les données test
-predictions <- model$predict(X_test)
-print(model$test(y_test, predictions, confusion_matrix = TRUE))
+# # Prédiction sur les données test
+# predictions <- model$predict(X_test)
+# print(model$test(y_test, predictions, confusion_matrix = TRUE))
 
-# data2 <- data[index, ]
-# glm_model <- glm(TenYearCHD ~ ., data = data2, family = binomial)
-# summary(glm_model)
+
+# # Comparaison avec glm
+data2 <- data[index, ]
+glm_model <- glm(TenYearCHD ~ ., data = data2, family = binomial)
+summary(glm_model)
