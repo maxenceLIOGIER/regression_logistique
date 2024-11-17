@@ -128,21 +128,44 @@ ui <- dashboardPage(
       # Menu 3 : Modélisation et prédiction
       tabItem(tabName = "menu3",
               tabsetPanel(
-                tabPanel("Préparation des données",
-                         selectInput("target", "Variable cible", choices = NULL),
-                         uiOutput("features_ui"),
-                         actionButton("prepare_data", "Préparer les données")
+                # Étape 1 : Sélection des variables et Split
+                tabPanel("1. Choix des variables et Split Train/Test",
+                         fluidRow(
+                           column(6, 
+                                  selectInput("target", "Variable cible", choices = NULL)
+                           ),
+                           column(6,
+                                  checkboxGroupInput("features", "Variables explicatives", choices = NULL, inline = TRUE)
+                           )
+                         ),
+                         numericInput("split_ratio", "Proportion des données d'entraînement (%)", value = 70, min = 50, max = 90),
+                         actionButton("prepare_data", "Préparer les données"),
+                         verbatimTextOutput("split_summary")
                 ),
-                tabPanel("Lancer la modélisation",
-                         verbatimTextOutput("model_summary"),
-                         actionButton("run_model", "Lancer la régression logistique")
+                
+                # Étape 2 : Entraînement du modèle
+                tabPanel("2. Entraîner le modèle",
+                         actionButton("run_model", "Lancer la régression logistique"),
+                         withSpinner(verbatimTextOutput("model_summary"), type = 4, color = "#0d6efd")  # Spinner
                 ),
-                tabPanel("Prédiction",
+                
+                # Étape 3 : Prédictions et validation
+                tabPanel("3. Validation et Prédictions",
                          fileInput("new_data", "Importer des données pour la prédiction"),
-                         verbatimTextOutput("prediction_results")
+                         actionButton("run_prediction", "Faire les prédictions"),
+                         verbatimTextOutput("prediction_results"),
+                         plotOutput("roc_curve"),
+                         plotOutput("confusion_matrix")
+                ),
+                
+                # Étape 4 : Résultats et Visualisation
+                tabPanel("4. Résultats",
+                         plotOutput("variable_importance_plot"),
+                         verbatimTextOutput("model_diagnostics")
                 )
               )
       )
+      
     )
   )
 )

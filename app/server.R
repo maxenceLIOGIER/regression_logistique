@@ -164,6 +164,126 @@ server <- function(input, output, session) {
       theme_minimal() +
       labs(title = paste("Relation entre", input$cat_var1, "et", input$cat_var2), y = "Proportion")
   })
+  
+  
+  #page 3 modelisation predictio 
+  observe({
+    req(data()) 
+    col_names <- names(data())
+    
+    # Mettre à jour les choix pour la variable cible
+    updateSelectInput(session, "target", choices = col_names, selected = input$target)
+    
+    # Mettre à jour les choix pour les variables explicatives
+    selected_target <- input$target
+    updated_features <- setdiff(col_names, selected_target) # Exclure la cible
+    updateCheckboxGroupInput(session, "features", choices = updated_features, selected = input$features)
+  })
+  
+  observeEvent(input$prepare_data, {
+    req(data(), input$target, input$features)
+    
+    # Identifier la variable cible et les explicatives
+    target_var <- input$target
+    features <- input$features
+    
+    # Vérifier qu'il y a des explicatives sélectionnées
+    if (is.null(features) || length(features) == 0) {
+      showNotification("Veuillez sélectionner au moins une variable explicative.", type = "error")
+      return()
+    }
+    
+    # Vérifier que la cible n'est pas dans les explicatives
+    if (target_var %in% features) {
+      showNotification("La variable cible ne peut pas être une variable explicative.", type = "error")
+      return()
+    }
+    
+    # Filtrer les colonnes pour inclure la cible et les features
+    selected_data <- data()[, c(features, target_var), drop = FALSE]
+    
+    # Split des données
+    split <- caret::createDataPartition(selected_data[[target_var]], p = input$split_ratio / 100, list = FALSE)
+    train_data <- selected_data[split, ]
+    test_data <- selected_data[-split, ]
+    
+    # Stocker dans des réactives
+    reactiveTrainData(train_data)
+    reactiveTestData(test_data)
+    
+    # Afficher un résumé
+    output$split_summary <- renderPrint({
+      list(
+        "Données d'entraînement" = dim(train_data),
+        "Données de test" = dim(test_data)
+      )
+    })
+  })
+  
+  # Entraîner le modèle
+  observeEvent(input$run_model, {
+    req(reactiveTrainData())  # Vérifie que les données d'entraînement sont disponibles
+    
+    # Simuler un délai pour l'entraînement
+    showNotification("Entraînement en cours...", type = "message")
+    Sys.sleep(3)  # Simule un entraînement de 3 secondes (remplacez par le code réel de votre modèle)
+    
+    # Entraîner un modèle de régression logistique
+    model <- glm(as.formula(paste(input$target, "~", paste(input$features, collapse = "+"))),
+                 data = reactiveTrainData(), family = "binomial")
+    
+    # Résumé du modèle
+    output$model_summary <- renderPrint({
+      summary(model)
+    })
+    
+    showNotification("Entraînement terminé avec succès !", type = "success")
+  })
+  
+  
+  # Prédire sur le jeu de test
+  observeEvent(input$run_prediction, {
+    req(reactiveModel(), reactiveTestData())
+    predictions <- predict(reactiveModel(), newdata = reactiveTestData(), type = "response")
+    
+    # Convertir les probabilités en classes
+    pred_classes <- ifelse(predictions > 0.5, levels(reactiveTestData()[[input$target]])[2], 
+                           levels(reactiveTestData()[[input$target]])[1])
+    
+    # Résultats
+    output$prediction_results <- renderPrint({
+      confusion <- caret::confusionMatrix(pred_classes, reactiveTestData()[[input$target]])
+      confusion
+    })
+  })
+  # Prédire sur le jeu de test
+observeEvent(input$run_prediction, {
+  req(reactiveModel(), reactiveTestData())
+  predictions <- predict(reactiveModel(), newdata = reactiveTestData(), type = "response")
+  
+  # Convertir les probabilités en classes
+  pred_classes <- ifelse(predictions > 0.5, levels(reactiveTestData()[[input$target]])[2], 
+                         levels(reactiveTestData()[[input$target]])[1])
+  
+  # Résultats
+  output$prediction_results <- renderPrint({
+    confusion <- caret::confusionMatrix(pred_classes, reactiveTestData()[[input$target]])
+    confusion
+  })
+})
+
+# Variable importance
+output$variable_importance_plot <- renderPlot({
+  req(reactiveModel())
+  importance <- caret::varImp(reactiveModel(), scale = TRUE)
+  ggplot(importance, aes(Overall, reorder(Variable, Overall))) +
+    geom_bar(stat = "identity", fill = "steelblue") +
+    labs(title = "Importance des Variables", x = "Importance", y = "Variable") +
+    theme_minimal()
+})
+
+
+  
 }
   
   
