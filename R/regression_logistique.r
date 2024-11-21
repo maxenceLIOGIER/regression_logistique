@@ -17,7 +17,7 @@ LogisticRegression <- R6Class("LogisticRegression",
     summary_values = c(ll = NULL, aic = NULL), #, pseudo_r2 = NULL),
 
     # Initialisation de la classe
-    initialize = function(nb_iters = 1000, alpha = 0.01) {
+    initialize = function(nb_iters = 500, alpha = 0.01) {
       #' @param nb_iters : nombre d'itérations
       #' @param alpha : taux d'apprentissage
       self$nb_iters <- nb_iters
