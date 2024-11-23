@@ -15,14 +15,25 @@ LogisticRegression <- R6Class("LogisticRegression",
     dict_coeff = NULL,
     nb_iters = NULL,
     alpha = NULL,
+    penalite = NULL,
+    lambda = NULL,
+    l1_ratio = NULL,
     summary_values = c(ll = NULL, aic = NULL),
 
     # Initialisation de la classe
-    initialize = function(nb_iters = 500, alpha = 0.01) {
+    initialize = function(nb_iters = 500, alpha = 0.01, penalite = NULL,
+                          lambda = 0, l1_ratio = 0) {
       #' @param nb_iters : nombre d'itérations
       #' @param alpha : taux d'apprentissage
+      #' @param penalite : régularisation : l1=lasso, l2=ridge, elasticnet
+      #' @param lambda : paramètre de régularisation
+      #' @param l1_ratio : ratio de régularisation l1
+
       self$nb_iters <- nb_iters
       self$alpha <- alpha
+      self$penalite <- penalite
+      self$lambda <- lambda
+      self$l1_ratio <- l1_ratio
     },
 
     # Modèle de régression logistique multinomiale
@@ -48,7 +59,11 @@ LogisticRegression <- R6Class("LogisticRegression",
       for (k in 1:K) {
         y_k <- ifelse(y == classes_uniques[k], 1, 0) # Encodage one-hot
         result <- descente_gradient(X_new, y_k, theta[, k],
-                                    self$nb_iters, self$alpha)
+                                    nb_iters = self$nb_iters,
+                                    alpha = self$alpha,
+                                    penalite = self$penalite,
+                                    lambda = self$lambda,
+                                    l1_ratio = self$l1_ratio)
         theta[, k] <- result$theta
       }
 
@@ -153,6 +168,7 @@ LogisticRegression <- R6Class("LogisticRegression",
                   rappel = rappel, f1_score = f1_score))
     },
 
+    # Fonction pour afficher un résumé des métriques et coefficients
     summary = function() {
       #' @description afficher un résumé des métriques du modèle
       #' @return résumé des métriques
@@ -169,7 +185,11 @@ LogisticRegression <- R6Class("LogisticRegression",
       cat("AIC:", self$summary_values["aic"], "\n")
     },
 
+    # Fonction pour afficher l'importance des variables
     var_importance = function(graph = TRUE) {
+      #' @param graph : booléen pour afficher le graphique
+      # ' @return vecteur des importances des variables
+
       if (is.null(self$theta)) {
         stop("Le modèle n'est pas encore entraîné")
       }
@@ -221,19 +241,24 @@ X_test <- X[-index, ]
 y_test <- y[-index]
 
 # Entraînement du modèle
-model <- LogisticRegression$new()
+model <- LogisticRegression$new(penalite = "elasticnet", lambda = 0,
+                                l1_ratio = 0.5)
 model <- model$fit(X_train, y_train)
-# model$summary()
+model$summary()
 
 # Importance des variables
 model$var_importance()
 
-# # Prédiction sur les données test
-# y_pred <- model$predict(X_test)
-# print(model$test(y_test, y_pred, confusion_matrix = TRUE))
+# Prédiction sur les données test
+y_pred <- model$predict(X_test)
+print(model$test(y_test, y_pred, confusion_matrix = TRUE))
+
 
 
 # # Comparaison avec glm
+# exemple avec les données Framingham
+# data <- read.csv("C:/Users/maxen/Documents/_SISE/Prog Stat sous R/Projet/framingham.csv")
+# data <- na.omit(data)
 # data2 <- data[index, ]
 # glm_model <- glm(TenYearCHD ~ ., data = data2, family = binomial)
 # summary(glm_model)
