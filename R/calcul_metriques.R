@@ -30,22 +30,3 @@ calcul_aic <- function(X, y, ll, theta) {
   aic <- 2*k - 2*ll
   return(aic)
 }
-
-# # Fonction pour calculer le pseudo R² de McFadden
-# calcul_pseudo_r2 <- function(X, y, ll) {
-#   #' @param ll : log-likelihood du modèle
-#   #' @description calculer le pseudo R² de McFadden
-#   #' @return valeur du pseudo R²
-
-#   # Calcul de la log-vraisemblance du modèle nul pour multiclasse
-#   class_proportions <- table(y) / length(y)
-#   print(class_proportions)
-#   null_ll <- sum(log(class_proportions[y]))
-
-#   null_deviance <- -2 * null_ll
-#   residual_deviance <- -2 * ll
-#   pseudo_r2 <- 1 - (residual_deviance / null_deviance)
-
-#   return(pseudo_r2)
-# }
-# Cette fonction ne marche pas. Donne des résultats beaucoup trop faibles

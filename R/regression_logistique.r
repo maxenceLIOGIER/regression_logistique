@@ -15,7 +15,7 @@ LogisticRegression <- R6Class("LogisticRegression",
     dict_coeff = NULL,
     nb_iters = NULL,
     alpha = NULL,
-    summary_values = c(ll = NULL, aic = NULL), #, pseudo_r2 = NULL),
+    summary_values = c(ll = NULL, aic = NULL),
 
     # Initialisation de la classe
     initialize = function(nb_iters = 500, alpha = 0.01) {
@@ -47,7 +47,8 @@ LogisticRegression <- R6Class("LogisticRegression",
       # Optimisation des paramètres pour chaque classe
       for (k in 1:K) {
         y_k <- ifelse(y == classes_uniques[k], 1, 0) # Encodage one-hot
-        result <- descente_gradient(X_new, y_k, theta[, k], self$nb_iters, self$alpha)
+        result <- descente_gradient(X_new, y_k, theta[, k],
+                                    self$nb_iters, self$alpha)
         theta[, k] <- result$theta
       }
 
@@ -67,13 +68,11 @@ LogisticRegression <- R6Class("LogisticRegression",
       # Calcul des métriques
       ll <- calcul_log_likelihood(X, y, theta)
       aic <- calcul_aic(X, y, ll, theta)
-      # pseudo_r2 <- calcul_pseudo_r2(X, y, ll))
 
       # Mise à jour des paramètres du modèle
       new_model$theta <- theta
       new_model$summary_values["ll"] <- ll
       new_model$summary_values["aic"] <- aic
-      # new_model$summary_values["pseudo_r2"] <- pseudo_r2
       new_model$dict_coeff <- dict_coeff
 
       return(new_model)
@@ -150,7 +149,8 @@ LogisticRegression <- R6Class("LogisticRegression",
         print(confusion_matrix)
       }
 
-      return(list(accuracy = accuracy, precision = precision, rappel = rappel, f1_score = f1_score))
+      return(list(accuracy = accuracy, precision = precision,
+                  rappel = rappel, f1_score = f1_score))
     },
 
     summary = function() {
@@ -167,7 +167,6 @@ LogisticRegression <- R6Class("LogisticRegression",
       # Affichage des métriques
       cat("Log-likelihood:", self$summary_values["ll"], "\n")
       cat("AIC:", self$summary_values["aic"], "\n")
-      # cat("Pseudo R² de McFadden:", round(self$summary_values["pseudo_r2"], 4), "\n")
     },
 
     var_importance = function(graph = TRUE) {
