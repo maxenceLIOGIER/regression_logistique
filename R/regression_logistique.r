@@ -1,4 +1,5 @@
 library(R6)
+library(ggplot2)
 
 source("R/calcul_metriques.R")
 source("R/prepare_x.R")
@@ -93,6 +94,10 @@ LogisticRegression <- R6Class("LogisticRegression",
     predict = function(X) {
       #' @description prédire les classes des individus
 
+      if (is.null(self$theta)) {
+        stop("Le modèle n'est pas encore entraîné")
+      }
+
       # Calcul des probabilités d'appartenance aux classes
       proba <- predict_proba(X, self$theta)
 
@@ -109,6 +114,10 @@ LogisticRegression <- R6Class("LogisticRegression",
       #' @param y_pred : vecteur des étiquettes prédites
       #' @param confusion_matrix : booléen pour afficher la matrice de confusion
       #' @return liste des métriques et matrice de confusion si demandée
+
+      if (is.null(self$theta)) {
+        stop("Le modèle n'est pas encore entraîné")
+      }
 
       # metriques
       # accuracy, facile à calculer
@@ -148,6 +157,10 @@ LogisticRegression <- R6Class("LogisticRegression",
       #' @description afficher un résumé des métriques du modèle
       #' @return résumé des métriques
 
+      if (is.null(self$theta)) {
+        stop("Le modèle n'est pas encore entraîné")
+      }
+
       # Affichage des coefficients de la régression
       print_coeffs(self$dict_coeff)
 
@@ -155,6 +168,41 @@ LogisticRegression <- R6Class("LogisticRegression",
       cat("Log-likelihood:", self$summary_values["ll"], "\n")
       cat("AIC:", self$summary_values["aic"], "\n")
       # cat("Pseudo R² de McFadden:", round(self$summary_values["pseudo_r2"], 4), "\n")
+    },
+
+    var_importance = function(graph = TRUE) {
+      if (is.null(self$theta)) {
+        stop("Le modèle n'est pas encore entraîné")
+      }
+      # Exclure l'intercept (première ligne)
+      theta2 <- self$theta[-1, , drop = FALSE]
+
+      # Calculer l'importance globale des variables
+      importance <- rowMeans(abs(theta2)) / sum(rowMeans(abs(theta2)))
+
+      # importances en %
+      importance <- importance * 100
+
+      # Créer un data frame avec les noms des variables et leurs importances
+      imp_df <- data.frame(
+        Variable = rownames(theta2),
+        Importance = importance
+      )
+
+      # Trier les variables par importance décroissante
+      imp_df <- imp_df[order(imp_df$Importance, decreasing = TRUE), ]
+
+      # Créer un barplot horizontal
+      if (graph) {
+        ggplot(imp_df, aes(x = reorder(Variable, Importance), y = Importance)) +
+          geom_bar(stat = "identity") +
+          coord_flip() +
+          xlab("Variable") +
+          ylab("Importance (%)") +
+          ggtitle("Importance des variables")
+      }
+
+      return(importance)
     }
   )
 )
@@ -176,11 +224,14 @@ y_test <- y[-index]
 # Entraînement du modèle
 model <- LogisticRegression$new()
 model <- model$fit(X_train, y_train)
-model$summary()
+# model$summary()
 
-# Prédiction sur les données test
-y_pred <- model$predict(X_test)
-print(model$test(y_test, y_pred, confusion_matrix = TRUE))
+# Importance des variables
+model$var_importance()
+
+# # Prédiction sur les données test
+# y_pred <- model$predict(X_test)
+# print(model$test(y_test, y_pred, confusion_matrix = TRUE))
 
 
 # # Comparaison avec glm

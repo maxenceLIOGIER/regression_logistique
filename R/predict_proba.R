@@ -3,6 +3,10 @@ source("R/prepare_x.R")
 predict_proba <- function(X, theta) {
   #' @description prédire probas d'appartenance des individus aux classes
 
+  if (is.null(theta)) {
+    stop("Le modèle n'est pas encore entraîné")
+  }
+
   # Préparation de la matrice X
   X_new <- prepare_x(X)
 
