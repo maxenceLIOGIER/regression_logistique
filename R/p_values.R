@@ -40,7 +40,7 @@ calcul_p_values <- function(X, theta) {
 
   # Formattage des p-values pour une meilleure lisibilité
   # Seules les p-values < 0.001 sont affichées en notation scientifique
-  p_values <- apply(p_values, 2, function(p) {
+  f_p_values <- apply(p_values, 2, function(p) {
     ifelse(p < 0.001, format(p, scientific = TRUE, digits = 3),
            sprintf("%.5f", p))
   })
@@ -58,7 +58,7 @@ calcul_p_values <- function(X, theta) {
     Coefficients = round(theta[, i], 5),
     Std_Errors = round(se, 5),
     Z_Scores = round(z_scores[, i], 5),
-    P_Values = p_values[, i],
+    P_Values = f_p_values[, i],
     Signif = significance
     )
   }

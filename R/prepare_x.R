@@ -59,6 +59,7 @@ prepare_x <- function(X) {
   }
 
   # Conversion de toutes les colonnes en numérique
-  X <- as.data.frame(lapply(X, as.numeric))
+  X[] <- sapply(X, as.numeric)
+  X <- as.data.frame(X)
   return(X)
 }
