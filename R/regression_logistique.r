@@ -45,7 +45,7 @@ LogisticRegression <- R6Class("LogisticRegression",
       #' @return matrice des paramètres optimisés
 
       # Préparation de la matrice X
-      X_new <- prepare_x(X)
+      X_new <- as.matrix(prepare_x(X))
 
       # Initialisation des paramètres
       classes_uniques <- unique(y)
@@ -58,7 +58,8 @@ LogisticRegression <- R6Class("LogisticRegression",
       # Optimisation des paramètres pour chaque classe
       for (k in 1:K) {
         y_k <- ifelse(y == classes_uniques[k], 1, 0) # Encodage one-hot
-        result <- descente_gradient(X_new, y_k, theta[, k],
+
+        result <- descente_gradient(X_new, y_k, theta[, k, drop = FALSE],
                                     nb_iters = self$nb_iters,
                                     alpha = self$alpha,
                                     penalite = self$penalite,
@@ -246,25 +247,25 @@ LogisticRegression <- R6Class("LogisticRegression",
 )
 
 
-# Exemple d'utilisation
-set.seed(123)
-data(iris)
+# # Exemple d'utilisation
+# set.seed(123)
+# data(iris)
 
-# Séparation des données en train et test
-X <- iris[, -c(5)]
-y <- iris$Species
-index <- sample(seq_len(nrow(iris)), nrow(iris) * 0.7)
-X_train <- X[index, ]
-y_train <- y[index]
-X_test <- X[-index, ]
-y_test <- y[-index]
+# # Séparation des données en train et test
+# X <- iris[, -c(5)]
+# y <- iris$Species
+# index <- sample(seq_len(nrow(iris)), nrow(iris) * 0.7)
+# X_train <- X[index, ]
+# y_train <- y[index]
+# X_test <- X[-index, ]
+# y_test <- y[-index]
 
-# Entraînement du modèle
-model <- LogisticRegression$new(penalite = "elasticnet", lambda = 0,
-                                l1_ratio = 0.5)
-model <- model$fit(X_train, y_train)
+# # Entraînement du modèle
+# model <- LogisticRegression$new(penalite = NULL, lambda = 0,
+#                                 l1_ratio = 0.5)
+# model <- model$fit(X_train, y_train)
 # model$summary()
-model$print()
+# # model$print()
 
 # # Importance des variables
 # model$var_importance()
@@ -275,10 +276,46 @@ model$print()
 
 
 
-# # Comparaison avec glm
-# exemple avec les données Framingham
-# data <- read.csv("C:/Users/maxen/Documents/_SISE/Prog Stat sous R/Projet/framingham.csv")
-# data <- na.omit(data)
-# data2 <- data[index, ]
-# glm_model <- glm(TenYearCHD ~ ., data = data2, family = binomial)
-# summary(glm_model)
+# Exemple d'utilisation
+set.seed(123)
+setwd("C:/Users/maxen/Documents/_SISE/Prog Stat sous R/Projet")
+data <- read.csv("framingham.csv")
+# head(data)
+
+# supprimer lignes manquantes
+data <- na.omit(data)
+
+# il faut s'assurer que les variables quali sont bien encodées
+data$male <- as.factor(data$male)
+data$education <- as.factor(data$education)
+data$currentSmoker <- as.factor(data$currentSmoker)
+data$BPMeds <- as.factor(data$BPMeds)
+data$prevalentStroke <- as.factor(data$prevalentStroke)
+data$prevalentHyp <- as.factor(data$prevalentHyp)
+data$diabetes <- as.factor(data$diabetes)
+data$TenYearCHD <- as.factor(data$TenYearCHD)
+
+# X y
+X <- data[, -c(16)]
+y <- data$TenYearCHD
+
+# Séparation des données en train et test
+index <- sample(1:nrow(data), nrow(data) * 0.7)
+X_train <- X[index, ]
+y_train <- y[index]
+X_test <- X[-index, ]
+y_test <- y[-index]
+
+model <- LogisticRegression$new()
+model <- model$fit(X_train, y_train)
+predictions <- model$predict(X_test)
+
+print(model$test(y_test, predictions, confusion_matrix = TRUE))
+
+model$summary()
+
+
+# glm
+data2 <- data.frame(prepare_x(data))
+glm_model <- glm(TenYearCHD ~ . - 1, data = data[index, ], family = binomial)
+summary(glm_model)

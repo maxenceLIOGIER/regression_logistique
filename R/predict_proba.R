@@ -8,7 +8,7 @@ predict_proba <- function(X, theta) {
   }
 
   # Préparation de la matrice X
-  X_new <- prepare_x(X)
+  X_new <- as.matrix(prepare_x(X))
 
   # Calculer les scores pour chaque classe
   scores <- X_new %*% theta

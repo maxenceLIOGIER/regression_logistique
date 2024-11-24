@@ -63,8 +63,8 @@ descente_gradient <- function(X, y, theta, nb_iters = 1000, alpha = 0.01,
         gradient <- gradient + lambda * (ridge_component + lasso_component) / m
       }
     }
+    theta <- theta - alpha * gradient
   }
-  theta <- theta - alpha * gradient
 
   return(list(theta = theta))
 }

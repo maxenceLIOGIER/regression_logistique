@@ -20,12 +20,25 @@ prepare_x <- function(X) {
   quali <- types_variables$qualitatives
   quanti <- types_variables$quantitatives
 
-  # Encodage one-hot des variables qualitatives
+  # Encodage one-hot des variables qualitatives s'il y a plus de 2 modalités
   if (length(quali) > 0) {
     quali_data <- X[, quali, drop = FALSE]
-    quali_encoded <- model.matrix(~ . - 1, data = quali_data)
+
+    # Filtrer les colonnes avec plus de 2 niveaux
+    quali_to_encode <- quali[sapply(quali_data, function(x) length(levels(x)) > 2)]
+    quali_to_keep <- quali[sapply(quali_data, function(x) length(levels(x)) == 2)]
+    quali_kept <- X[, quali_to_keep, drop = FALSE]
+
+    # Encodage one-hot
+    quali_encoded_list <- lapply(quali_to_encode, function(col) {
+      model.matrix(~ . , data = X[, col, drop = FALSE])[ , -1]
+    })
+    quali_encoded <- do.call(cbind, quali_encoded_list)
+
   } else {
     quali_encoded <- matrix(0, nrow = nrow(X), ncol = 0)
+    quali_kept <- matrix(0, nrow = nrow(X), ncol = 0)
+    # matrices vides pour éviter les erreurs
   }
 
   # Normalisation des variables quantitatives
@@ -37,7 +50,7 @@ prepare_x <- function(X) {
   }
 
   # Combinaison des variables encodées et normalisées
-  X <- cbind(quali_encoded, quanti_normalized)
+  X <- cbind(quali_kept, quali_encoded, quanti_normalized)
 
   # Ajout d'une colonne d'intercept, si n'est pas déjà présente
   if (sum(colnames(X) == "intercept") == 0) {
@@ -45,5 +58,7 @@ prepare_x <- function(X) {
   colnames(X)[1] <- "intercept"
   }
 
+  # Conversion de toutes les colonnes en numérique
+  X <- as.data.frame(lapply(X, as.numeric))
   return(X)
 }

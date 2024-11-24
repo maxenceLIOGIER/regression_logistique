@@ -8,7 +8,7 @@ hessienne <- function(X, theta) {
   #' @return matrice hessienne taille p x p
 
   # préparation de X
-  X <- prepare_x(X) # taille n x p
+  X <- as.matrix(prepare_x(X)) # taille n x p
 
   # Initialisation de H
   H <- matrix(0, ncol(X), ncol(X))
@@ -19,7 +19,6 @@ hessienne <- function(X, theta) {
     D_k <- diag(as.vector(p_k * (1 - p_k)))
     H <- H + t(X) %*% D_k %*% X
   }
-
   return(H)
 }
 
