@@ -168,6 +168,25 @@ LogisticRegression <- R6Class("LogisticRegression",
                   rappel = rappel, f1_score = f1_score))
     },
 
+    print = function() {
+      #' @description afficher les coefficients de la régression
+
+      if (is.null(self$theta)) {
+        stop("Le modèle n'est pas encore entraîné")
+      }
+
+      coeffs <- list()
+      noms_classes <- colnames(self$theta)
+
+      for (i in seq_len(ncol(self$theta))) {
+        coeffs[[noms_classes[i]]] <- data.frame(
+        Coefficients = round(self$theta[, i], 5)
+        )
+      }
+
+      return(coeffs)
+    },
+
     # Fonction pour afficher un résumé des métriques et coefficients
     summary = function() {
       #' @description afficher un résumé des métriques du modèle
@@ -244,14 +263,15 @@ y_test <- y[-index]
 model <- LogisticRegression$new(penalite = "elasticnet", lambda = 0,
                                 l1_ratio = 0.5)
 model <- model$fit(X_train, y_train)
-model$summary()
+# model$summary()
+model$print()
 
-# Importance des variables
-model$var_importance()
+# # Importance des variables
+# model$var_importance()
 
-# Prédiction sur les données test
-y_pred <- model$predict(X_test)
-print(model$test(y_test, y_pred, confusion_matrix = TRUE))
+# # Prédiction sur les données test
+# y_pred <- model$predict(X_test)
+# print(model$test(y_test, y_pred, confusion_matrix = TRUE))
 
 
 

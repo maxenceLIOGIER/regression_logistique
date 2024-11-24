@@ -74,7 +74,7 @@ print_coeffs <- function(dict_coeff) {
   #'                     coeffs, erreurs std, z-scores et p-values
   #' @return coefficients de la régression
 
-  cat("\n Coefficients de la régression : \n\n")
+  cat("\n Coefficients de la régression : \n")
 
   if (length(dict_coeff) == 2) {
     # Afficher uniquement la classe 1 si binaire
