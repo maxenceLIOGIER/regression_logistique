@@ -2,6 +2,12 @@ server <- function(input, output, session) {
   # Réactive pour stocker les données
   data <- reactiveVal(NULL)
   sheets <- reactiveVal(NULL)  # Pour les feuilles d'un fichier Excel
+  # Réactifs pour stocker les données d'entraînement et de test
+  reactiveTrainData <- reactiveVal()
+  reactiveTestData <- reactiveVal()
+  
+  # Réactif pour stocker le modèle
+  reactiveModel <- reactiveVal()
   
   # Charger le fichier
   observeEvent(input$file, {
@@ -167,39 +173,42 @@ server <- function(input, output, session) {
   
   
   #page 3 modelisation predictio 
+  # Sélection automatique des variables explicatives basées sur l'importance
   observe({
-    req(data()) 
+    req(data())
     col_names <- names(data())
     
     # Mettre à jour les choix pour la variable cible
     updateSelectInput(session, "target", choices = col_names, selected = input$target)
     
-    # Mettre à jour les choix pour les variables explicatives
+    # Mise à jour automatique des variables explicatives en excluant la cible
     selected_target <- input$target
-    updated_features <- setdiff(col_names, selected_target) # Exclure la cible
-    updateCheckboxGroupInput(session, "features", choices = updated_features, selected = input$features)
+    if (!is.null(selected_target)) {
+      feature_candidates <- setdiff(col_names, selected_target)
+      updateCheckboxGroupInput(session, "features", 
+                               choices = feature_candidates, 
+                               selected = feature_candidates)
+    }
   })
   
+  # Préparation des données
   observeEvent(input$prepare_data, {
     req(data(), input$target, input$features)
     
-    # Identifier la variable cible et les explicatives
     target_var <- input$target
     features <- input$features
     
-    # Vérifier qu'il y a des explicatives sélectionnées
+    # Validation des sélections
     if (is.null(features) || length(features) == 0) {
       showNotification("Veuillez sélectionner au moins une variable explicative.", type = "error")
       return()
     }
-    
-    # Vérifier que la cible n'est pas dans les explicatives
     if (target_var %in% features) {
       showNotification("La variable cible ne peut pas être une variable explicative.", type = "error")
       return()
     }
     
-    # Filtrer les colonnes pour inclure la cible et les features
+    # Filtrer les données
     selected_data <- data()[, c(features, target_var), drop = FALSE]
     
     # Split des données
@@ -207,11 +216,9 @@ server <- function(input, output, session) {
     train_data <- selected_data[split, ]
     test_data <- selected_data[-split, ]
     
-    # Stocker dans des réactives
     reactiveTrainData(train_data)
     reactiveTestData(test_data)
     
-    # Afficher un résumé
     output$split_summary <- renderPrint({
       list(
         "Données d'entraînement" = dim(train_data),
@@ -222,67 +229,89 @@ server <- function(input, output, session) {
   
   # Entraîner le modèle
   observeEvent(input$run_model, {
-    req(reactiveTrainData())  # Vérifie que les données d'entraînement sont disponibles
+    req(reactiveTrainData())
     
-    # Simuler un délai pour l'entraînement
-    showNotification("Entraînement en cours...", type = "message")
-    Sys.sleep(3)  # Simule un entraînement de 3 secondes (remplacez par le code réel de votre modèle)
+    train_data <- reactiveTrainData()
+    target_var <- input$target
+    features <- input$features
     
-    # Entraîner un modèle de régression logistique
-    model <- glm(as.formula(paste(input$target, "~", paste(input$features, collapse = "+"))),
-                 data = reactiveTrainData(), family = "binomial")
+    # Identifier le type de variable cible
+    target_levels <- length(unique(train_data[[target_var]]))
     
-    # Résumé du modèle
+    if (target_levels == 2) {
+      # Modèle binaire (logistique)
+      model <- glm(as.formula(paste(target_var, "~", paste(features, collapse = "+"))), 
+                   data = train_data, family = "binomial")
+      model_type <- "binaire"
+    } else {
+      # Modèle multinomial
+      train_data[[target_var]] <- factor(train_data[[target_var]])
+      model <- multinom(as.formula(paste(target_var, "~", paste(features, collapse = "+"))), 
+                        data = train_data)
+      model_type <- "multinomiale"
+    }
+    
+    reactiveModel(model)  # Stocker le modèle dans une réactive
+    
+    # Afficher le résumé du modèle
     output$model_summary <- renderPrint({
+      cat("Type de modèle : Régression", model_type, "\n\n")
       summary(model)
     })
     
-    showNotification("Entraînement terminé avec succès !", type = "success")
+    # Notification de succès
+    showNotification("Entraînement terminé avec succès !", type = "message")
   })
   
   
-  # Prédire sur le jeu de test
+  # Prédictions
   observeEvent(input$run_prediction, {
     req(reactiveModel(), reactiveTestData())
-    predictions <- predict(reactiveModel(), newdata = reactiveTestData(), type = "response")
     
-    # Convertir les probabilités en classes
-    pred_classes <- ifelse(predictions > 0.5, levels(reactiveTestData()[[input$target]])[2], 
-                           levels(reactiveTestData()[[input$target]])[1])
+    model <- reactiveModel()
+    test_data <- reactiveTestData()
     
-    # Résultats
+    if (inherits(model, "glm")) {
+      predictions <- predict(model, newdata = test_data, type = "response")
+      pred_classes <- ifelse(predictions > 0.5, levels(test_data[[input$target]])[2], 
+                             levels(test_data[[input$target]])[1])
+    } else {
+      pred_classes <- predict(model, newdata = test_data)
+    }
+    
     output$prediction_results <- renderPrint({
-      confusion <- caret::confusionMatrix(pred_classes, reactiveTestData()[[input$target]])
+      confusion <- caret::confusionMatrix(as.factor(pred_classes), test_data[[input$target]])
       confusion
     })
   })
-  # Prédire sur le jeu de test
-observeEvent(input$run_prediction, {
-  req(reactiveModel(), reactiveTestData())
-  predictions <- predict(reactiveModel(), newdata = reactiveTestData(), type = "response")
   
-  # Convertir les probabilités en classes
-  pred_classes <- ifelse(predictions > 0.5, levels(reactiveTestData()[[input$target]])[2], 
-                         levels(reactiveTestData()[[input$target]])[1])
-  
-  # Résultats
-  output$prediction_results <- renderPrint({
-    confusion <- caret::confusionMatrix(pred_classes, reactiveTestData()[[input$target]])
-    confusion
+  # Importance des variables
+  output$variable_importance_plot <- renderPlot({
+    req(reactiveModel())
+    model <- reactiveModel()
+    
+    if (inherits(model, "glm")) {
+      # Importance pour modèle logistique
+      importance <- caret::varImp(model, scale = TRUE)
+      ggplot(importance, aes(Overall, reorder(Variable, Overall))) +
+        geom_bar(stat = "identity", fill = "steelblue") +
+        labs(title = "Importance des Variables (Logistique)", x = "Importance", y = "Variable") +
+        theme_minimal()
+    } else if (inherits(model, "multinom")) {
+      # Importance pour modèle multinomial (approximation)
+      coefs <- summary(model)$coefficients
+      var_importance <- apply(abs(coefs), 2, mean)  # Moyenne des coefficients absolus
+      importance_df <- data.frame(Variable = names(var_importance), Importance = var_importance)
+      
+      ggplot(importance_df, aes(Importance, reorder(Variable, Importance))) +
+        geom_bar(stat = "identity", fill = "darkorange") +
+        labs(title = "Importance des Variables (Multinomiale)", x = "Importance", y = "Variable") +
+        theme_minimal()
+    } else {
+      # Modèle non pris en charge
+      showNotification("Impossible de calculer l'importance des variables pour ce modèle.", type = "error")
+    }
   })
-})
-
-# Variable importance
-output$variable_importance_plot <- renderPlot({
-  req(reactiveModel())
-  importance <- caret::varImp(reactiveModel(), scale = TRUE)
-  ggplot(importance, aes(Overall, reorder(Variable, Overall))) +
-    geom_bar(stat = "identity", fill = "steelblue") +
-    labs(title = "Importance des Variables", x = "Importance", y = "Variable") +
-    theme_minimal()
-})
-
-
   
 }
   

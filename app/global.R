@@ -9,6 +9,7 @@ library(readxl)            # Lecture des fichiers Excel
 library(dplyr)             # Manipulation de données
 library(tidyr)             # Organisation des données
 library(stringr)           # Manipulation de chaînes de caractères
+library(nnet)
 
 # Bibliothèques pour les visualisations
 library(ggplot2)           # Graphiques de qualité
@@ -27,7 +28,3 @@ library(shinyalert)        # Notifications et alertes stylisées
 library(plotly)            # Graphiques interactifs
 library(shinycssloaders)
 
-
-# Réactives pour stocker les données d'entraînement et de test
-reactiveTrainData <- reactiveVal(NULL)
-reactiveTestData <- reactiveVal(NULL)

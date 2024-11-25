@@ -128,7 +128,6 @@ ui <- dashboardPage(
       # Menu 3 : Modélisation et prédiction
       tabItem(tabName = "menu3",
               tabsetPanel(
-                # Étape 1 : Sélection des variables et Split
                 tabPanel("1. Choix des variables et Split Train/Test",
                          fluidRow(
                            column(6, 
@@ -142,29 +141,25 @@ ui <- dashboardPage(
                          actionButton("prepare_data", "Préparer les données"),
                          verbatimTextOutput("split_summary")
                 ),
-                
-                # Étape 2 : Entraînement du modèle
                 tabPanel("2. Entraîner le modèle",
-                         actionButton("run_model", "Lancer la régression logistique"),
-                         withSpinner(verbatimTextOutput("model_summary"), type = 4, color = "#0d6efd")  # Spinner
+                         actionButton("run_model", "Lancer l'entraînement"),
+                         #withSpinner(verbatimTextOutput("model_summary"), type = 4, color = "#0d6efd")
                 ),
-                
-                # Étape 3 : Prédictions et validation
                 tabPanel("3. Validation et Prédictions",
                          fileInput("new_data", "Importer des données pour la prédiction"),
                          actionButton("run_prediction", "Faire les prédictions"),
-                         verbatimTextOutput("prediction_results"),
-                         plotOutput("roc_curve"),
-                         plotOutput("confusion_matrix")
+                         verbatimTextOutput("prediction_results")
                 ),
-                
-                # Étape 4 : Résultats et Visualisation
                 tabPanel("4. Résultats",
-                         plotOutput("variable_importance_plot"),
-                         verbatimTextOutput("model_diagnostics")
+                         h3("Résumé du modèle"),
+                         verbatimTextOutput("model_summary"),  # Résumé du modèle ici
+                         h3("Importance des variables"),
+                         plotOutput("variable_importance_plot")  # Graphique d'importance ici
                 )
+                
               )
       )
+  
       
     )
   )
