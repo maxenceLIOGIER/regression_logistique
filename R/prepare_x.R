@@ -1,3 +1,17 @@
+#' @title Déterminer les variables qualitatives et quantitatives
+#' @description Cette fonction permet de différencier les variables qualitatives (facteurs et caractères)
+#'              et quantitatives (numériques et entières) dans un data.frame.
+#'
+#' @param df : data.frame contenant les données à analyser.
+#'
+#' @return Une liste contenant deux éléments :
+#'         - `qualitatives` : un vecteur des noms des variables qualitatives
+#'         - `quantitatives` : un vecteur des noms des variables quantitatives
+#'
+#' @examples
+#' print("Hi")
+#' @export
+
 # Fonction pour déterminer les variables qualitatives et quantitatives
 type_variable <- function(df) {
   #' @param df : data.frame contenant les données
@@ -8,6 +22,19 @@ type_variable <- function(df) {
 
   return(list(qualitatives = quali, quantitatives = quanti))
 }
+
+#' @title Préparer la matrice X à la prise en compte des variables mixtes
+#' @description Cette fonction prépare la matrice X en encodant les variables qualitatives (s'il y a plus de 2 modalités),
+#'              en normalisant les variables quantitatives et en ajoutant une colonne d'intercept (si nécessaire).
+#'
+#' @param X : data.frame contenant les données d'entrée avec des variables qualitatives et quantitatives.
+#'
+#' @return Une matrice `X` préparée, avec les variables qualitatives encodées, les variables quantitatives normalisées,
+#'         et une colonne d'intercept ajoutée (si ce n'est pas déjà présent).
+#'
+#' @examples
+#' print("Hi")
+#' @export
 
 # Fonction pour préparer la matrice X à la prise en compte des variables mixtes
 prepare_x <- function(X) {

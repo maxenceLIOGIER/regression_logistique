@@ -1,9 +1,41 @@
+#' @title Fonction sigmoïde
+#' @description Calcule la fonction sigmoïde de l'entrée `z`. La sigmoïde est une fonction qui transforme
+#'              les valeurs d'entrée en un résultat compris entre 0 et 1.
+#'
+#' @param z Un vecteur ou une matrice de valeurs numériques.
+#'
+#' @return Un vecteur ou une matrice de même taille que `z`, où chaque élément correspond à la valeur de la fonction sigmoïde appliquée à l'élément correspondant de `z`.
+#' @export
+#' @examples
+#' print("hi")
+#' @export
+
 # Fonction sigmoïde
 sigmoid <- function(z) {
   #' @param z : vecteur ou matrice
   #' @return sigmoïde de z (valeur comprise entre 0 et 1)
   return(1 / (1 + exp(-z)))
 }
+
+
+#' @title Fonction de descente de gradient pour régression logistique
+#' @description Cette fonction applique l'algorithme de descente de gradient pour optimiser les paramètres `theta`
+#'              d'un modèle de régression logistique, avec possibilité d'ajouter une régularisation L1, L2 ou ElasticNet.
+#'
+#' @param X Matrice des caractéristiques (n x p), où n est le nombre d'individus et p est le nombre de caractéristiques.
+#' @param y Vecteur des étiquettes (n x 1), où chaque élément correspond à la classe d'un individu.
+#' @param theta Vecteur des paramètres du modèle (p x 1), où p est le nombre de caractéristiques.
+#' @param nb_iters Nombre d'itérations de la descente de gradient (par défaut 1000).
+#' @param alpha Taux d'apprentissage (par défaut 0.01).
+#' @param penalite Type de régularisation : "l1" pour Lasso, "l2" pour Ridge, "elasticnet" pour ElasticNet, ou NULL pour aucune régularisation.
+#' @param lambda Paramètre de régularisation (par défaut 0).
+#' @param l1_ratio Ratio de régularisation L1 pour ElasticNet, doit être compris entre 0 et 1 (par défaut 0).
+#'
+#' @return Liste contenant les paramètres optimisés `theta`.
+#'
+#' @examples
+#' print("hi")
+#' @export
 
 # Fonction de descente de gradient pour régression logistique
 # avec régularisation l1, l2 ou elasticnet

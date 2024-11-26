@@ -1,34 +1,48 @@
-library(R6)
-library(ggplot2)
+#' LogisticRegression Class
+#'
+#' A class for performing multinomial logistic regression using gradient descent.
+#'
+#' @import R6
+#' @import ggplot2
 
-source("R/calcul_metriques.R")
-source("R/prepare_x.R")
-source("R/descente_gradient.R")
-source("R/predict_proba.R")
-source("R/p_values.R")
-
-
-# Définition de la classe LogisticRegression
 LogisticRegression <- R6Class("LogisticRegression",
   public = list(
+
+    #' @field theta (matrix) Model coefficients, including the intercept for each class.
     theta = NULL,
+
+    #' @field dict_coeff (data.frame) A data frame of p-values for the model coefficients.
     dict_coeff = NULL,
+
+    #' @field nb_iters (integer) Number of iterations for gradient descent. Default is 500.
     nb_iters = NULL,
+
+    #' @field alpha (numeric) Learning rate for gradient descent. Default is 0.01.
     alpha = NULL,
+
+    #' @field penalite (character) Regularization type. Can be "l1" (lasso), "l2" (ridge), or "elasticnet".
     penalite = NULL,
+
+    #' @field lambda (numeric) Regularization parameter.
     lambda = NULL,
+
+    #' @field l1_ratio (numeric) The ratio of L1 regularization in elasticnet. Default is 0.
     l1_ratio = NULL,
+
+    #' @field summary_values (vector) A vector containing the log-likelihood and AIC values.
     summary_values = c(ll = NULL, aic = NULL),
 
-    # Initialisation de la classe
+    #' @description Initialize the LogisticRegression model with specified parameters.
+    #'
+    #' @param nb_iters (integer) Number of iterations for gradient descent. Default is 500.
+    #' @param alpha (numeric) Learning rate for gradient descent. Default is 0.01.
+    #' @param penalite (character) Regularization method: "l1" for lasso, "l2" for ridge, or "elasticnet". Default is NULL.
+    #' @param lambda (numeric) Regularization parameter. Default is 0.
+    #' @param l1_ratio (numeric) The ratio of L1 regularization in elasticnet. Default is 0.
+    #' @return A LogisticRegression object.
+    #' @method LogisticRegression initialize
     initialize = function(nb_iters = 500, alpha = 0.01, penalite = NULL,
                           lambda = 0, l1_ratio = 0) {
-      #' @param nb_iters : nombre d'itérations
-      #' @param alpha : taux d'apprentissage
-      #' @param penalite : régularisation : l1=lasso, l2=ridge, elasticnet
-      #' @param lambda : paramètre de régularisation
-      #' @param l1_ratio : ratio de régularisation l1
-
       self$nb_iters <- nb_iters
       self$alpha <- alpha
       self$penalite <- penalite
@@ -36,18 +50,14 @@ LogisticRegression <- R6Class("LogisticRegression",
       self$l1_ratio <- l1_ratio
     },
 
-    # Modèle de régression logistique multinomiale
+    #' @description Perform multinomial logistic regression to find optimal parameters.
+    #'
+    #' @param X (data.frame) Predictor variables (features) for the model.
+    #' @param y (vector) Target variable (labels) for training the model.
+    #' @return (matrix) Optimized parameters for each class.
+    #' @method LogisticRegression multinomial_logistic_regression
     multinomial_logistic_regression = function(X, y) {
-      #' @param X data.frame des caractéristiques
-      #'          peut contenir des variables qualitatives et quantitatives
-      #' @param y Vecteur des étiquettes = variable cible
-      #' @description trouver paramètres optimaux de la régression logistique
-      #' @return matrice des paramètres optimisés
-
-      # Préparation de la matrice X
       X_new <- as.matrix(prepare_x(X))
-
-      # Initialisation des paramètres
       classes_uniques <- unique(y)
       K <- length(classes_uniques)
       n <- ncol(X_new)
@@ -55,10 +65,8 @@ LogisticRegression <- R6Class("LogisticRegression",
       colnames(theta) <- classes_uniques
       rownames(theta) <- colnames(X_new)
 
-      # Optimisation des paramètres pour chaque classe
       for (k in 1:K) {
-        y_k <- ifelse(y == classes_uniques[k], 1, 0) # Encodage one-hot
-
+        y_k <- ifelse(y == classes_uniques[k], 1, 0)
         result <- descente_gradient(X_new, y_k, theta[, k, drop = FALSE],
                                     nb_iters = self$nb_iters,
                                     alpha = self$alpha,
@@ -71,21 +79,21 @@ LogisticRegression <- R6Class("LogisticRegression",
       return(theta)
     },
 
-    # Fonction d'apprentissage
+    #' @description Train the logistic regression model using provided data.
+    #'
+    #' @param X (data.frame) Training predictor variables (features).
+    #' @param y (vector) Training target variable (labels).
+    #' @return (LogisticRegression) A trained LogisticRegression model.
+    #' @method LogisticRegression fit
+    #' @export
     fit = function(X, y) {
-      #' @description entraîner le modèle de régression logistique
-      #' @return nouveau modèle, entraîné sur les données X et y
       new_model <- self$clone()
-
-      # calcul des coeffs
       theta <- self$multinomial_logistic_regression(X, y)
       dict_coeff <- calcul_p_values(X, theta)
 
-      # Calcul des métriques
       ll <- calcul_log_likelihood(X, y, theta)
       aic <- calcul_aic(X, y, ll, theta)
 
-      # Mise à jour des paramètres du modèle
       new_model$theta <- theta
       new_model$summary_values["ll"] <- ll
       new_model$summary_values["aic"] <- aic
@@ -94,51 +102,48 @@ LogisticRegression <- R6Class("LogisticRegression",
       return(new_model)
     },
 
-    # Fonction pour prédire les probabilités
-    # Cette fct existe déjà dans predict_proba.R
-    # Mais on la redéfinit ici pour qu'elle soit accessible depuis l'objet
+    #' @description Predict the probabilities of each class for new data.
+    #'
+    #' @param X (data.frame) New data (features) for which to predict probabilities.
+    #' @param theta (matrix) Model parameters.
+    #' @return (matrix) A matrix of predicted probabilities for each class.
+    #' @method LogisticRegression predict_proba
     predict_proba = function(X, theta) {
-      #' @description prédire les probabilités d'appartenance aux classes
-      #' @return matrice des probabilités
-
-      proba <- predict_proba(X_new, theta)
+      proba <- predict_proba(X, theta)
       return(proba)
     },
 
-    # Fonction de prédiction
+    #' @description Predict the class for each observation in the dataset.
+    #'
+    #' @param X (data.frame) New data (features) for which to predict the class.
+    #' @return (vector) Predicted classes based on highest probabilities.
+    #' @method LogisticRegression  predict
     predict = function(X) {
-      #' @description prédire les classes des individus
-
       if (is.null(self$theta)) {
         stop("Le modèle n'est pas encore entraîné")
       }
 
-      # Calcul des probabilités d'appartenance aux classes
       proba <- predict_proba(X, self$theta)
-
-      # Prédire la classe avec la probabilité la plus élevée
       class_indices <- apply(proba, 1, which.max)
       class_names <- colnames(proba)
       pred <- class_names[class_indices]
       return(pred)
     },
 
-    # Fonction pour évaluer le modèle
+    #' @description Evaluate the model performance using various metrics.
+    #'
+    #' @param y_true (vector) True labels.
+    #' @param y_pred (vector) Predicted labels.
+    #' @param confusion_matrix (logical) Whether to display the confusion matrix. Default is FALSE.
+    #' @return (list) A list containing accuracy, precision, recall, f1 score, and confusion matrix if requested.
+    #' @method LogisticRegression test
     test = function(y_true, y_pred, confusion_matrix = FALSE) {
-      #' @param y_true : vecteur des vraies étiquettes
-      #' @param y_pred : vecteur des étiquettes prédites
-      #' @param confusion_matrix : booléen pour afficher la matrice de confusion
-      #' @return liste des métriques et matrice de confusion si demandée
-
       if (is.null(self$theta)) {
         stop("Le modèle n'est pas encore entraîné")
       }
 
-      # metriques
-      # accuracy, facile à calculer
       accuracy <- sum(y_true == y_pred) / length(y_true)
 
-      # precision, rappel, f1-score
       classes <- unique(y_true)
       precision_list <- c()
       rappel_list <- c()
@@ -159,7 +164,6 @@ LogisticRegression <- R6Class("LogisticRegression",
       rappel <- mean(rappel_list, na.rm = TRUE)
       f1_score <- 2 * precision * rappel / (precision + rappel)
 
-      # Matrice de confusion
       if (confusion_matrix) {
         confusion_matrix <- table(y_pred, y_true)
         print(confusion_matrix)
@@ -169,9 +173,11 @@ LogisticRegression <- R6Class("LogisticRegression",
                   rappel = rappel, f1_score = f1_score))
     },
 
+    #' @description Print the coefficients of the trained model.
+    #'
+    #' @return (list) A list of coefficients for each class.
+    #' @method LogisticRegression print
     print = function() {
-      #' @description afficher les coefficients de la régression
-
       if (is.null(self$theta)) {
         stop("Le modèle n'est pas encore entraîné")
       }
@@ -181,43 +187,40 @@ LogisticRegression <- R6Class("LogisticRegression",
 
       for (i in seq_len(ncol(self$theta))) {
         coeffs[[noms_classes[i]]] <- data.frame(
-        Coefficients = round(self$theta[, i], 5)
+          Coefficients = round(self$theta[, i], 5)
         )
       }
 
       return(coeffs)
     },
 
-    # Fonction pour afficher un résumé des métriques et coefficients
+    #' @description Display a summary of model metrics and coefficients.
+    #'
+    #' @return (void) Print summary to the console.
+    #' @method LogisticRegression summary
     summary = function() {
-      #' @description afficher un résumé des métriques du modèle
-      #' @return résumé des métriques
-
       if (is.null(self$theta)) {
         stop("Le modèle n'est pas encore entraîné")
       }
 
-      # Affichage des coefficients de la régression
       print_coeffs(self$dict_coeff)
-
-      # Affichage des métriques
       cat("Log-likelihood:", self$summary_values["ll"], "\n")
       cat("AIC:", self$summary_values["aic"], "\n")
     },
 
-    # Fonction pour afficher l'importance des variables
+    #' @description Compute the importance of the variables based on the trained model.
+    #'
+    #' @param graph (logical) Whether to display the variable importance graph. Default is TRUE.
+    #' @return (vector) A vector of the relative importance of each variable.
+    #' @method LogisticRegression var_importance
     var_importance = function(graph = TRUE) {
-      #' @param graph : booléen pour afficher le graphique
-      # ' @return vecteur des importances des variables
-
       if (is.null(self$theta)) {
         stop("Le modèle n'est pas encore entraîné")
       }
-      # Exclure l'intercept (première ligne)
       theta2 <- self$theta[-1, , drop = FALSE]
+      importance <- rowMeans(abs(theta2))
 
-      # Calculer l'importance globale des variables
-      importance <- rowMeans(abs(theta2)) / sum(rowMeans(abs(theta2)))
+
 
       # importances en %
       importance <- importance * 100
