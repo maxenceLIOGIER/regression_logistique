@@ -1,9 +1,9 @@
-# Calcule la matrice hessienne
+#' @title Calcul de la matrice hessienne
+#' @description Calcul de la matrice hessienne
+#' @param X : matrice des données taille n x p
+#' @param theta : matrice des paramètres taille p x K
+#' @return matrice hessienne taille p x p
 hessienne <- function(X, theta) {
-  # @description Calcul de la matrice hessienne
-  # @param X : matrice des données taille n x p
-  # @param theta : matrice des paramètres taille p x K
-  # @return matrice hessienne taille p x p
 
   # préparation de X
   X <- as.matrix(prepare_x(X)) # taille n x p
@@ -20,28 +20,17 @@ hessienne <- function(X, theta) {
   return(H)
 }
 
+
 #' @title Calcul des p-values des coefficients de la régression
-#' @description Cette fonction calcule les p-values des coefficients de régression à partir de la matrice hessienne.
-#'              Les p-values sont utilisées pour tester l'hypothèse nulle selon laquelle chaque coefficient est égal à zéro.
+#' @description Calcul des p-values des coefficients de la régression
 #'
-#' @param X matrice des données d'entrée de taille n x p.
-#' @param theta matrice des coefficients de régression de taille p x K.
+#' @param X matrice des données d'entrée
+#' @param theta matrice des coefficients de régression
 #'
-#' @return Liste contenant des dataframes avec les coefficients, les erreurs standard, les z-scores, et les p-values pour chaque classe.
-#'
-#' @examples
-#' print("Hi")
-#' @export
-
-# Calcule les p-values des coefficients
+#' @return liste de dataframes contenant :
+#'         coeffs, erreurs std, z-scores et p-values
+#'         pour chaque classe de la régression
 calcul_p_values <- function(X, theta) {
-  #' @description Calcul des p-values des coefficients de la régression
-  #' @param X : matrice des données
-  #' @param theta : matrice des paramètres taille p x K
-  #' @return liste de dataframes contenant :
-  #'         coeffs, erreurs std, z-scores et p-values
-  #'         pour chaque classe de la régression
-
   H <- hessienne(X, theta)
 
   # calcul des se, z-scores et p-values
@@ -77,25 +66,13 @@ calcul_p_values <- function(X, theta) {
   return(dict_coeff)
 }
 
+
 #' @title Afficher un résumé des coefficients
-#' @description Cette fonction affiche un résumé des coefficients de régression, y compris les erreurs standards,
-#'              les z-scores, les p-values et les niveaux de significativité pour chaque classe de la régression.
-#'
-#' @param dict_coeff Liste de dataframes contenant les coefficients, erreurs standards, z-scores, p-values et significativité.
-#'
-#' @return Affiche les coefficients sous forme de texte.
-#'
-#' @examples
-#' print("Hi")
-#' @export
-
-# Fonction pour afficher un résumé clair des coefficients
+#' @description afficher les coefficients de la régression
+#' @param dict_coeff : liste de dataframes contenant
+#'                     coeffs, erreurs std, z-scores et p-values
+#' @return coefficients de la régression
 print_coeffs <- function(dict_coeff) {
-  #' @description afficher les coefficients de la régression
-  #' @param dict_coeff : liste de dataframes contenant
-  #'                     coeffs, erreurs std, z-scores et p-values
-  #' @return coefficients de la régression
-
   cat("\n Coefficients de la régression : \n")
 
   if (length(dict_coeff) == 2) {

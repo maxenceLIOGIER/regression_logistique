@@ -3,11 +3,9 @@
 #' A class for performing multinomial logistic regression using gradient descent.
 #'
 #' @import R6
-#' @import ggplot2
 
 LogisticRegression <- R6Class("LogisticRegression",
   public = list(
-
     #' @field theta (matrix) Model coefficients, including the intercept for each class.
     theta = NULL,
 
@@ -20,8 +18,8 @@ LogisticRegression <- R6Class("LogisticRegression",
     #' @field alpha (numeric) Learning rate for gradient descent. Default is 0.01.
     alpha = NULL,
 
-    #' @field penalite (character) Regularization type. Can be "l1" (lasso), "l2" (ridge), or "elasticnet".
-    penalite = NULL,
+    #' @field penalty (character) Regularization type. Can be "l1" (lasso), "l2" (ridge), or "elasticnet".
+    penalty = NULL,
 
     #' @field lambda (numeric) Regularization parameter.
     lambda = NULL,
@@ -36,16 +34,16 @@ LogisticRegression <- R6Class("LogisticRegression",
     #'
     #' @param nb_iters (integer) Number of iterations for gradient descent. Default is 500.
     #' @param alpha (numeric) Learning rate for gradient descent. Default is 0.01.
-    #' @param penalite (character) Regularization method: "l1" for lasso, "l2" for ridge, or "elasticnet". Default is NULL.
+    #' @param penalty (character) Regularization method: "l1" for lasso, "l2" for ridge, or "elasticnet". Default is NULL.
     #' @param lambda (numeric) Regularization parameter. Default is 0.
     #' @param l1_ratio (numeric) The ratio of L1 regularization in elasticnet. Default is 0.
     #' @return A LogisticRegression object.
     #' @method LogisticRegression initialize
-    initialize = function(nb_iters = 500, alpha = 0.01, penalite = NULL,
+    initialize = function(nb_iters = 500, alpha = 0.01, penalty = NULL,
                           lambda = 0, l1_ratio = 0) {
       self$nb_iters <- nb_iters
       self$alpha <- alpha
-      self$penalite <- penalite
+      self$penalty <- penalty
       self$lambda <- lambda
       self$l1_ratio <- l1_ratio
     },
@@ -70,7 +68,7 @@ LogisticRegression <- R6Class("LogisticRegression",
         result <- descente_gradient(X_new, y_k, theta[, k, drop = FALSE],
                                     nb_iters = self$nb_iters,
                                     alpha = self$alpha,
-                                    penalite = self$penalite,
+                                    penalty = self$penalty,
                                     lambda = self$lambda,
                                     l1_ratio = self$l1_ratio)
         theta[, k] <- result$theta
@@ -220,8 +218,6 @@ LogisticRegression <- R6Class("LogisticRegression",
       theta2 <- self$theta[-1, , drop = FALSE]
       importance <- rowMeans(abs(theta2))
 
-
-
       # importances en %
       importance <- importance * 100
 
@@ -265,7 +261,7 @@ X_test <- X[-index, ]
 y_test <- y[-index]
 
 # Entraînement du modèle
-model <- LogisticRegression$new(penalite = NULL, lambda = 0,
+model <- LogisticRegression$new(penalty = NULL, lambda = 0,
                                 l1_ratio = 0.5)
 model <- model$fit(X_train, y_train)
 model$summary()
