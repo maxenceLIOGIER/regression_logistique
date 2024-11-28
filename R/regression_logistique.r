@@ -30,7 +30,9 @@ LogisticRegression <- R6Class("LogisticRegression",
     #' @field summary_values (vector) A vector containing the log-likelihood and AIC values.
     summary_values = c(ll = NULL, aic = NULL),
 
-    #' @description Initialize the LogisticRegression model with specified parameters.
+
+    #' @title Class Constructor, initializes the logistic regression model
+    #' @description Initializes the Logistic Regression model with specified parameters.
     #'
     #' @param nb_iters (integer) Number of iterations for gradient descent. Default is 500.
     #' @param alpha (numeric) Learning rate for gradient descent. Default is 0.01.
@@ -48,7 +50,9 @@ LogisticRegression <- R6Class("LogisticRegression",
       self$l1_ratio <- l1_ratio
     },
 
-    #' @description Perform multinomial logistic regression to find optimal parameters.
+
+    #' @title Multinomial logistic regression
+    #' @description Performs multinomial logistic regression to find optimal parameters.
     #'
     #' @param X (data.frame) Predictor variables (features) for the model.
     #' @param y (vector) Target variable (labels) for training the model.
@@ -77,7 +81,9 @@ LogisticRegression <- R6Class("LogisticRegression",
       return(theta)
     },
 
-    #' @description Train the logistic regression model using provided data.
+
+    #' @title Training of the logistic regression model
+    #' @description Trains the logistic regression model using provided data.
     #'
     #' @param X (data.frame) Training predictor variables (features).
     #' @param y (vector) Training target variable (labels).
@@ -100,7 +106,11 @@ LogisticRegression <- R6Class("LogisticRegression",
       return(new_model)
     },
 
-    #' @description Predict the probabilities of each class for new data.
+
+    #' @title Predicts class membership probabilities
+    #' @description Predicts the probabilities of individuals belonging to classes
+    #'              Uses the scores obtained by multiplying X with theta,
+    #'              then applies the softmax function to obtain the probabilities
     #'
     #' @param X (data.frame) New data (features) for which to predict probabilities.
     #' @param theta (matrix) Model parameters.
@@ -111,7 +121,9 @@ LogisticRegression <- R6Class("LogisticRegression",
       return(proba)
     },
 
-    #' @description Predict the class for each observation in the dataset.
+
+    #' @title Predicts the class of each individual
+    #' @description Predicts the class for each observation in the dataset.
     #'
     #' @param X (data.frame) New data (features) for which to predict the class.
     #' @return (vector) Predicted classes based on highest probabilities.
@@ -128,13 +140,15 @@ LogisticRegression <- R6Class("LogisticRegression",
       return(pred)
     },
 
-    #' @description Evaluate the model performance using various metrics.
+
+    #' @title Metrics to evaluate the model
+    #' @description Evaluates the model performance using various metrics :
+    #'              accuracy, precision, recall, f1 score, and confusion matrix
     #'
     #' @param y_true (vector) True labels.
     #' @param y_pred (vector) Predicted labels.
-    #' @param confusion_matrix (logical) Whether to display the confusion matrix. Default is FALSE.
-    #' @return (list) A list containing accuracy, precision, recall, f1 score, and confusion matrix if requested.
-    #' @method LogisticRegression test
+    #' @param confusion_matrix (logical) Whether to display the confusion matrix
+    #' @return (list) accuracy, precision, recall, f1 score, and confusion matrix if requested.
     test = function(y_true, y_pred, confusion_matrix = FALSE) {
       if (is.null(self$theta)) {
         stop("Le modèle n'est pas encore entraîné")
@@ -171,7 +185,9 @@ LogisticRegression <- R6Class("LogisticRegression",
                   rappel = rappel, f1_score = f1_score))
     },
 
-    #' @description Print the coefficients of the trained model.
+
+    #' @title Coefficients of the regressions
+    #' @description Prints the coefficients of the trained model.
     #'
     #' @return (list) A list of coefficients for each class.
     #' @method LogisticRegression print
@@ -192,7 +208,9 @@ LogisticRegression <- R6Class("LogisticRegression",
       return(coeffs)
     },
 
-    #' @description Display a summary of model metrics and coefficients.
+
+    #' @title Model metrics and coefficients
+    #' @description Displays a summary of model metrics and coefficients.
     #'
     #' @return (void) Print summary to the console.
     #' @method LogisticRegression summary
@@ -206,7 +224,9 @@ LogisticRegression <- R6Class("LogisticRegression",
       cat("AIC:", self$summary_values["aic"], "\n")
     },
 
-    #' @description Compute the importance of the variables based on the trained model.
+
+    #' @title importance of variables to the model
+    #' @description Computes the importance of the variables based on the trained model.
     #'
     #' @param graph (logical) Whether to display the variable importance graph. Default is TRUE.
     #' @return (vector) A vector of the relative importance of each variable.

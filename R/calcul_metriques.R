@@ -1,20 +1,20 @@
 # source("R/predict_proba.R")
 
-#' @title Fonction pour calculer la log-vraisemblance
-#' @description Cette fonction calcule la log-vraisemblance du modèle
-#'              en fonction des probabilités prédites pour chaque observation.
+#' @title Function to Calculate Log-Likelihood
+#' @description This function calculates the log-likelihood of the model
+#'              based on the predicted probabilities for each observation.
 #'
-#' @param X Matrice des caractéristiques (n x p),
-#'          n e= nombre d'individus et p = nombre de variables
-#' @param y Vecteur des étiquettes (n x 1)
-#' @param theta Matrice des coeffs de la régression (p x K),
-#'              p = nombre de caractéristiques et K = nombre de classes.
+#' @param X Feature matrix (n x p),
+#'          n = number of individuals and p = number of variables
+#' @param y Label vector (n x 1)
+#' @param theta Matrix of regression coefficients (p x K),
+#'              p = number of features and K = number of classes.
 #'
-#' @return La log-vraisemblance du modèle
+#' @return The log-likelihood of the model
 calcul_log_likelihood <- function(X, y, theta) {
   proba <- predict_proba(X, theta)
-  # calculer les proba sur l'échantillon d'apprentissage permet
-  # de mesurer à quel point le modèle s'ajuste aux données
+  # calculating the probabilities on the training sample allows
+  # to measure how well the model fits the data
 
   log_likelihood <- 0
   for (i in seq_len(nrow(X))) {
@@ -26,18 +26,18 @@ calcul_log_likelihood <- function(X, y, theta) {
 }
 
 
-#' @title Fonction pour calculer l'AIC (Akaike Information Criterion)
-#' @description Cette fonction calcule l'Akaike Information Criterion (AIC).
-#'              L'AIC permet de comparer plusieurs modèles entre eux.
-#'              Il prend en compte la qualité de l'ajustement et le nombre de paramètres utilisés.
+#' @title Function to Calculate AIC (Akaike Information Criterion)
+#' @description This function calculates the Akaike Information Criterion (AIC).
+#'              The AIC allows comparing several models with each other.
+#'              It takes into account the quality of the fit and the number of parameters used.
 #'
-#' @param X : matrice des caractéristiques
-#' @param y : vecteur des étiquettes (n x 1)
-#' @param ll Log-vraisemblance du modèle
-#' @param theta Matrice des coeffs de la régression (p x K),
-#'              p = nombre de caractéristiques et K = nombre de classes.
+#' @param X Feature matrix
+#' @param y Label vector (n x 1)
+#' @param ll Log-likelihood of the model
+#' @param theta Matrix of regression coefficients (p x K),
+#'              p = number of features and K = number of classes.
 #'
-#' @return L'AIC du modèle
+#' @return The AIC of the model
 calcul_aic <- function(X, y, ll, theta) {
   k <- length(theta)
   aic <- 2*k - 2*ll

@@ -1,8 +1,8 @@
-#' @title Calcul de la matrice hessienne
-#' @description Calcul de la matrice hessienne
-#' @param X : matrice des données taille n x p
-#' @param theta : matrice des paramètres taille p x K
-#' @return matrice hessienne taille p x p
+#' @title hessian matrix
+#' @description Computes the hessian matrix
+#' @param X : data matrix (n x p)
+#' @param theta : matrix of regression coefficients (p x K)
+#' @return hessian matrix (p x p)
 hessienne <- function(X, theta) {
 
   # préparation de X
@@ -21,31 +21,31 @@ hessienne <- function(X, theta) {
 }
 
 
-#' @title Calcul des p-values des coefficients de la régression
-#' @description Calcul des p-values des coefficients de la régression
+#' @title Calculate p-values of regression coefficients
+#' @description Calculate p-values of regression coefficients
 #'
-#' @param X matrice des données d'entrée
-#' @param theta matrice des coefficients de régression
+#' @param X matrix of input data
+#' @param theta matrix of regression coefficients
 #'
-#' @return liste de dataframes contenant :
-#'         coeffs, erreurs std, z-scores et p-values
-#'         pour chaque classe de la régression
+#' @return list of dataframes containing:
+#'         coefficients, standard errors, z-scores, and p-values
+#'         for each class of the regression
 calcul_p_values <- function(X, theta) {
   H <- hessienne(X, theta)
 
-  # calcul des se, z-scores et p-values
+  # calculate standard errors, z-scores, and p-values
   se <- sqrt(diag(solve(H)))
   z_scores <- theta / se
   p_values <- 2 * (1 - pnorm(abs(z_scores)))
 
-  # Formattage des p-values pour une meilleure lisibilité
-  # Seules les p-values < 0.001 sont affichées en notation scientifique
+  # Formatting p-values for better readability
+  # Only p-values < 0.001 are displayed in scientific notation
   f_p_values <- apply(p_values, 2, function(p) {
     ifelse(p < 0.001, format(p, scientific = TRUE, digits = 3),
            sprintf("%.5f", p))
   })
 
-  # Création du dictionnaire de coefficients
+  # Creating the dictionary of coefficients
   dict_coeff <- list()
   noms_classes <- colnames(theta)
 
@@ -67,20 +67,20 @@ calcul_p_values <- function(X, theta) {
 }
 
 
-#' @title Afficher un résumé des coefficients
-#' @description afficher les coefficients de la régression
-#' @param dict_coeff : liste de dataframes contenant
-#'                     coeffs, erreurs std, z-scores et p-values
-#' @return coefficients de la régression
+#' @title Display a summary of coefficients
+#' @description Display the regression coefficients
+#' @param dict_coeff : list of dataframes containing
+#'                     coefficients, standard errors, z-scores, and p-values
+#' @return regression coefficients
 print_coeffs <- function(dict_coeff) {
   cat("\n Coefficients de la régression : \n")
 
   if (length(dict_coeff) == 2) {
-    # Afficher uniquement la classe 1 si binaire
+    # Display only class 1 if binary
     print(dict_coeff[[2]])
 
   } else {
-    # Afficher toutes les classes si multiclasse
+    # Display all classes if multiclass
     for (k in seq_len(length(dict_coeff))) {
       cat("\nClasse", names(dict_coeff[k]), ":\n")
       print(dict_coeff[[k]])

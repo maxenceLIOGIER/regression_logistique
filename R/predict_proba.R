@@ -1,28 +1,27 @@
-#' @title Prédire les probabilités d'appartenance aux classes
-#' @description Prédire les probabilités d'appartenance des individus aux classes.
-#' Cette fonction utilise les scores obtenus par la multiplication de la matrice
-#' des caractéristiques X avec les coefficients theta, puis applique la fonction softmax
-#' pour obtenir les probabilités d'appartenance aux différentes classes.
+#' @title Predicts class membership probabilities
+#' @description Predicts the probabilities of individuals belonging to classes.
+#'              Uses the scores obtained by multiplying X with theta,
+#'              then applies the softmax function to obtain the probabilities
 #'
-#' @param X matrice ou data.frame des caractéristiques des individus
-#'          ligne = un individu, colonne = une caractéristique
-#' @param theta matrice des coefficients appris
-#'              colonne = une classe, ligne = une caractéristique
+#' @param X matrix or data.frame of individuals' features
+#'          row = an individual, column = a feature
+#' @param theta matrix of learned coefficients
+#'              column = a class, row = a feature
 #'
-#' @return matrice des probabilités d'appartenance aux classes pour chaque individu
-#'         chaque ligne correspond à un individu et chaque colonne à une classe
+#' @return matrix of class membership probabilities for each individual
+#'         each row corresponds to an individual and each column to a class
 predict_proba <- function(X, theta) {
   if (is.null(theta)) {
-    stop("Le modèle n'est pas encore entraîné")
+    stop("The model is not yet trained")
   }
 
-  # Préparation de la matrice X
+  # Prepare the matrix X
   X_new <- as.matrix(prepare_x(X))
 
-  # Calculer les scores pour chaque classe
+  # Calculate the scores for each class
   scores <- X_new %*% theta
 
-  # Appliquer la fonction softmax pour obtenir les probabilités
+  # Apply the softmax function to obtain the probabilities
   softmax <- function(x) {
     exp(x) / rowSums(exp(x))
   }

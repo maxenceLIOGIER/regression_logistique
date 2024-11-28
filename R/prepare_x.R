@@ -1,8 +1,9 @@
-#' @title Déterminer les variables qualitatives et quantitatives
-#' @description Cette fonction permet de différencier les variables qualitatives (facteurs et caractères)
-#'              et quantitatives (numériques et entières) dans un data.frame.
-#' @param df : data.frame contenant les données
-#' @return liste contenant les variables qualitatives et quantitatives
+#' @title Determines qualitative and quantitative variables
+#' @description differentiates between qualitative variables (factors and characters)
+#'              and quantitative variables (numeric and integer) in a data.frame
+#'              WARNING : if the variables are not correctly encoded this won't work
+#' @param df : data.frame containing the data
+#' @return list containing qualitative and quantitative variables
 type_variable <- function(df) {
   quali <- names(df)[sapply(df, is.factor) | sapply(df, is.character)]
   quanti <- names(df)[sapply(df, is.numeric) | sapply(df, is.integer)]
@@ -11,27 +12,27 @@ type_variable <- function(df) {
 }
 
 
-#' @title Préparer la matrice X à la prise en compte des variables mixtes
-#' @description Cette fonction prépare la matrice X en encodant les variables qualitatives (s'il y a plus de 2 modalités),
-#'              en normalisant les variables quantitatives et en ajoutant une colonne d'intercept (si nécessaire).
-#' @param X : data.frame contenant les données
-#' @return X encodé et normalisé
+#' @title Prepare the matrix X to account for mixed variables
+#' @description Prepares the matrix X by encoding qualitative variables (if more than 2 modalities),
+#'              normalizing quantitative variables, and adding an intercept column.
+#' @param X : data.frame containing the data
+#' @return encoded and normalized X
 prepare_x <- function(X) {
-  # Déterminer les variables qualitatives et quantitatives
+  # Determine qualitative and quantitative variables
   types_variables <- type_variable(X)
   quali <- types_variables$qualitatives
   quanti <- types_variables$quantitatives
 
-  # Encodage one-hot des variables qualitatives s'il y a plus de 2 modalités
+  # One-hot encoding of qualitative variables if more than 2 modalities
   if (length(quali) > 0) {
     quali_data <- X[, quali, drop = FALSE]
 
-    # Filtrer les colonnes avec plus de 2 niveaux
+    # Filter columns with more than 2 levels
     quali_to_encode <- quali[sapply(quali_data, function(x) length(levels(x)) > 2)]
     quali_to_keep <- quali[sapply(quali_data, function(x) length(levels(x)) == 2)]
     quali_kept <- X[, quali_to_keep, drop = FALSE]
 
-    # Encodage one-hot
+    # One-hot encoding
     quali_encoded_list <- lapply(quali_to_encode, function(col) {
       model.matrix(~ . , data = X[, col, drop = FALSE])[ , -1]
     })
@@ -43,7 +44,7 @@ prepare_x <- function(X) {
     # matrices vides pour éviter les erreurs
   }
 
-  # Normalisation des variables quantitatives
+  # Normalization of quantitative variables
   if (length(quanti) > 0) {
     quanti_data <- X[, quanti, drop = FALSE]
     quanti_normalized <- scale(quanti_data)
@@ -51,16 +52,16 @@ prepare_x <- function(X) {
     quanti_normalized <- matrix(0, nrow = nrow(X), ncol = 0)
   }
 
-  # Combinaison des variables encodées et normalisées
+  # Combination of encoded and normalized variables
   X <- cbind(quali_kept, quali_encoded, quanti_normalized)
 
-  # Ajout d'une colonne d'intercept, si n'est pas déjà présente
+  # Adding an intercept column, if not already present
   if (sum(colnames(X) == "intercept") == 0) {
   X <- cbind(1, X)
   colnames(X)[1] <- "intercept"
   }
 
-  # Conversion de toutes les colonnes en numérique
+  # Conversion of all columns to numeric
   X[] <- sapply(X, as.numeric)
   X <- as.data.frame(X)
   return(X)

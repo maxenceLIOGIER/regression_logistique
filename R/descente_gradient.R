@@ -1,51 +1,47 @@
-#' @title Fonction sigmoïde
-#' @description Cette fonction calcule la sigmoïde d'un vecteur ou d'une matrice.
-#' @param z : vecteur ou matrice
-#' @return sigmoïde de z (valeur comprise entre 0 et 1)
-sigmoid <- function(z) {
-  return(1 / (1 + exp(-z)))
-}
-
-
-#' @title Fonction de descente de gradient pour régression logistique
-#' @description Cette fonction applique l'algorithme de descente de gradient pour optimiser les paramètres `theta`
-#'              d'un modèle de régression logistique, avec possibilité d'ajouter une régularisation L1, L2 ou ElasticNet.
+#' @title Gradient Descent Function for Logistic Regression
+#' @description applies the gradient descent to optimize the `theta` parameters
+#'              with the possibility to add L1, L2, or ElasticNet regularization
 #'
-#' @param X : matrice des caractéristiques
-#' @param y : vecteur des étiquettes
-#' @param theta : vecteur des paramètres
-#' @param nb_iters : nombre d'itérations à effectuer
-#' @param alpha : taux d'apprentissage
-#' @param penalty : type de régularisation : l1=lasso, l2=ridge, elasticnet
-#' @param lambda : paramètre de régularisation
-#' @param l1_ratio : ratio de régularisation l1
+#' @param X : feature matrix
+#' @param y : label vector
+#' @param theta : parameter vector
+#' @param nb_iters : number of iterations to perform
+#' @param alpha : learning rate
+#' @param penalty : type of regularization: l1=lasso, l2=ridge, elasticnet
+#' @param lambda : regularization parameter
+#' @param l1_ratio : l1 regularization ratio
 #'
-#' @return liste des paramètres optimisés
+#' @return list of optimized parameters
 descente_gradient <- function(X, y, theta, nb_iters = 1000, alpha = 0.01,
                               penalty = NULL, lambda = 0, l1_ratio = 0) {
-  # Vérification de penalty
+  # Check penalty
   if (!is.null(penalty) && !penalty %in% c("l1", "l2", "elasticnet")) {
-    stop("Erreur : 'penalty' doit être 'l1', 'l2', 'elasticnet' ou NULL.")
+    stop("Error: 'penalty' must be 'l1', 'l2', 'elasticnet' or NULL.")
   }
 
-  # Vérification de l1_ratio
+  # Check l1_ratio
   if (penalty == "elasticnet" && (l1_ratio < 0 || l1_ratio > 1)) {
-    stop("Erreur : 'l1_ratio' doit être compris entre 0 et 1.")
+    stop("Error: 'l1_ratio' must be between 0 and 1.")
   }
-  # Vérification de lambda
+  # Check lambda
   if (lambda < 0) {
-    stop("Erreur : 'lambda' doit être positif.")
+    stop("Error: 'lambda' must be positive.")
   }
-  # Vérification de alpha
+  # Check alpha
   if (alpha <= 0) {
-    stop("Erreur : 'alpha' doit être positif.")
+    stop("Error: 'alpha' must be positive.")
   }
-  # Vérification de nb_iters
+  # Check nb_iters
   if (nb_iters <= 0) {
-    stop("Erreur : 'nb_iters' doit être positif.")
+    stop("Error: 'nb_iters' must be positive.")
   }
 
   m <- nrow(X)
+
+  # sigmoid function
+  sigmoid <- function(z) {
+    return(1 / (1 + exp(-z)))
+  }
 
   for (i in 1:nb_iters) {
     h <- sigmoid(X %*% theta)
@@ -54,11 +50,11 @@ descente_gradient <- function(X, y, theta, nb_iters = 1000, alpha = 0.01,
     if (!is.null(penalty)) {
       if (penalty == "l2") { # Ridge
         gradient <- gradient + lambda * theta / m
-        # obtenu en dérivant \lambda \sum_{j=1}^{p} \beta_j^2
+        # obtained by deriving \lambda \sum_{j=1}^{p} \beta_j^2
 
       } else if (penalty == "l1") { # Lasso
         gradient <- gradient + lambda * sign(theta) / m
-        # obtenu en dérivant \lambda \sum_{j=1}^{p} |\beta_j|
+        # obtained by deriving \lambda \sum_{j=1}^{p} |\beta_j|
 
       } else if (penalty == "elasticnet") {
         ridge_component <- (1 - l1_ratio) * theta
