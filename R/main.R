@@ -210,6 +210,7 @@ LogisticRegression <- R6Class("LogisticRegression",
     #'
     #' @param graph (logical) Whether to display the variable importance graph. Default is TRUE.
     #' @return (vector) A vector of the relative importance of each variable.
+    #'         The sum is equal to 100%
     #' @method LogisticRegression var_importance
     var_importance = function(graph = TRUE) {
       if (is.null(self$theta)) {
@@ -219,7 +220,7 @@ LogisticRegression <- R6Class("LogisticRegression",
       importance <- rowMeans(abs(theta2))
 
       # importances en %
-      importance <- importance * 100
+      importance <- importance / sum(importance) * 100
 
       # Créer un data frame avec les noms des variables et leurs importances
       imp_df <- data.frame(
@@ -232,12 +233,13 @@ LogisticRegression <- R6Class("LogisticRegression",
 
       # Créer un barplot horizontal
       if (graph) {
-        ggplot(imp_df, aes(x = reorder(Variable, Importance), y = Importance)) +
+        p <- ggplot(imp_df, aes(x = reorder(Variable, Importance), y = Importance)) +
           geom_bar(stat = "identity") +
           coord_flip() +
           xlab("Variable") +
           ylab("Importance (%)") +
           ggtitle("Importance des variables")
+        print(p)
       }
 
       return(importance)
@@ -268,7 +270,7 @@ model$summary()
 # model$print()
 
 # Importance des variables
-model$var_importance()
+model$var_importance(graph=TRUE)
 
 # Prédiction sur les données test
 y_pred <- model$predict(X_test)
