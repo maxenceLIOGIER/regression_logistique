@@ -1,11 +1,11 @@
-library("R6")
-library("ggplot2")
-source("R/prepare_x.R")
-source("R/predict_proba.R")
-source("R/calcul_metriques.R")
-source("R/p_values.R")
-source("R/descente_gradient.R")
-source("R/reg_multinomiale.R")
+# library("R6")
+# library("ggplot2")
+# source("R/prepare_x.R")
+# source("R/predict_proba.R")
+# source("R/calcul_metriques.R")
+# source("R/p_values.R")
+# source("R/descente_gradient.R")
+# source("R/reg_multinomiale.R")
 
 #' LogisticRegression Class
 #'

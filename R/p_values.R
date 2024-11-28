@@ -1,4 +1,4 @@
-source("R/prepare_x.R")
+# source("R/prepare_x.R")
 
 #' @title hessian matrix
 #' @description Computes the hessian matrix
