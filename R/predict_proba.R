@@ -1,3 +1,5 @@
+source("R/prepare_x.R")
+
 #' @title Predicts class membership probabilities
 #' @description Predicts the probabilities of individuals belonging to classes.
 #'              Uses the scores obtained by multiplying X with theta,

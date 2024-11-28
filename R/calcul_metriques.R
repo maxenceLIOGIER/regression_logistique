@@ -1,4 +1,4 @@
-# source("R/predict_proba.R")
+source("R/predict_proba.R")
 
 #' @title Function to Calculate Log-Likelihood
 #' @description This function calculates the log-likelihood of the model

@@ -1,8 +1,18 @@
+library("R6")
+library("ggplot2")
+source("R/prepare_x.R")
+source("R/predict_proba.R")
+source("R/calcul_metriques.R")
+source("R/p_values.R")
+source("R/descente_gradient.R")
+source("R/reg_multinomiale.R")
+
 #' LogisticRegression Class
 #'
 #' A class for performing multinomial logistic regression using gradient descent.
 #'
 #' @import R6
+#' @import ggplot2
 
 LogisticRegression <- R6Class("LogisticRegression",
   public = list(
@@ -51,37 +61,6 @@ LogisticRegression <- R6Class("LogisticRegression",
     },
 
 
-    #' @title Multinomial logistic regression
-    #' @description Performs multinomial logistic regression to find optimal parameters.
-    #'
-    #' @param X (data.frame) Predictor variables (features) for the model.
-    #' @param y (vector) Target variable (labels) for training the model.
-    #' @return (matrix) Optimized parameters for each class.
-    #' @method LogisticRegression multinomial_logistic_regression
-    multinomial_logistic_regression = function(X, y) {
-      X_new <- as.matrix(prepare_x(X))
-      classes_uniques <- unique(y)
-      K <- length(classes_uniques)
-      n <- ncol(X_new)
-      theta <- matrix(0, nrow = n, ncol = K)
-      colnames(theta) <- classes_uniques
-      rownames(theta) <- colnames(X_new)
-
-      for (k in 1:K) {
-        y_k <- ifelse(y == classes_uniques[k], 1, 0)
-        result <- descente_gradient(X_new, y_k, theta[, k, drop = FALSE],
-                                    nb_iters = self$nb_iters,
-                                    alpha = self$alpha,
-                                    penalty = self$penalty,
-                                    lambda = self$lambda,
-                                    l1_ratio = self$l1_ratio)
-        theta[, k] <- result$theta
-      }
-
-      return(theta)
-    },
-
-
     #' @title Training of the logistic regression model
     #' @description Trains the logistic regression model using provided data.
     #'
@@ -92,7 +71,8 @@ LogisticRegression <- R6Class("LogisticRegression",
     #' @export
     fit = function(X, y) {
       new_model <- self$clone()
-      theta <- self$multinomial_logistic_regression(X, y)
+      theta <- reg_multinomiale(X, y, self$nb_iters, self$alpha,
+                                self$penalty, self$lambda, self$l1_ratio)
       dict_coeff <- calcul_p_values(X, theta)
 
       ll <- calcul_log_likelihood(X, y, theta)
