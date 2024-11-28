@@ -2,25 +2,17 @@
 % Please edit documentation in R/p_values.R
 \name{print_coeffs}
 \alias{print_coeffs}
-\title{Afficher un résumé des coefficients}
+\title{Display a summary of coefficients}
 \usage{
 print_coeffs(dict_coeff)
 }
 \arguments{
-\item{dict_coeff}{: liste de dataframes contenant
-coeffs, erreurs std, z-scores et p-values}
+\item{dict_coeff}{: list of dataframes containing
+coefficients, standard errors, z-scores, and p-values}
 }
 \value{
-Affiche les coefficients sous forme de texte.
-
-coefficients de la régression
+regression coefficients
 }
 \description{
-Cette fonction affiche un résumé des coefficients de régression, y compris les erreurs standards,
-les z-scores, les p-values et les niveaux de significativité pour chaque classe de la régression.
-
-afficher les coefficients de la régression
-}
-\examples{
-print("Hi")
+Display the regression coefficients
 }

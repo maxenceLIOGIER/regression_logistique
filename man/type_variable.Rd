@@ -2,24 +2,18 @@
 % Please edit documentation in R/prepare_x.R
 \name{type_variable}
 \alias{type_variable}
-\title{Déterminer les variables qualitatives et quantitatives}
+\title{Determines qualitative and quantitative variables}
 \usage{
 type_variable(df)
 }
 \arguments{
-\item{df}{: data.frame contenant les données}
+\item{df}{: data.frame containing the data}
 }
 \value{
-Une liste contenant deux éléments :
-- \code{qualitatives} : un vecteur des noms des variables qualitatives
-- \code{quantitatives} : un vecteur des noms des variables quantitatives
-
-liste contenant les variables qualitatives et quantitatives
+list containing qualitative and quantitative variables
 }
 \description{
-Cette fonction permet de différencier les variables qualitatives (facteurs et caractères)
-et quantitatives (numériques et entières) dans un data.frame.
-}
-\examples{
-print("Hi")
+differentiates between qualitative variables (factors and characters)
+and quantitative variables (numeric and integer) in a data.frame
+WARNING : if the variables are not correctly encoded this won't work
 }

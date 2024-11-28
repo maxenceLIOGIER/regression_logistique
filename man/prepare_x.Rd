@@ -2,25 +2,17 @@
 % Please edit documentation in R/prepare_x.R
 \name{prepare_x}
 \alias{prepare_x}
-\title{Préparer la matrice X à la prise en compte des variables mixtes}
+\title{Prepare the matrix X to account for mixed variables}
 \usage{
 prepare_x(X)
 }
 \arguments{
-\item{X}{: data.frame contenant les données}
+\item{X}{: data.frame containing the data}
 }
 \value{
-Une matrice \code{X} préparée, avec les variables qualitatives encodées, les variables quantitatives normalisées,
-et une colonne d'intercept ajoutée (si ce n'est pas déjà présent).
-
-X encodé et normalisé
+encoded and normalized X
 }
 \description{
-Cette fonction prépare la matrice X en encodant les variables qualitatives (s'il y a plus de 2 modalités),
-en normalisant les variables quantitatives et en ajoutant une colonne d'intercept (si nécessaire).
-
-encode variables quali et normalise les quanti + intercept
-}
-\examples{
-print("Hi")
+Prepares the matrix X by encoding qualitative variables (if more than 2 modalities),
+normalizing quantitative variables, and adding an intercept column.
 }

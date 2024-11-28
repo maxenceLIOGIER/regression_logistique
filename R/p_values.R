@@ -1,5 +1,7 @@
 # source("R/prepare_x.R")
 
+#' @importFrom stats pnorm
+
 #' @title hessian matrix
 #' @description Computes the hessian matrix
 #' @param X : data matrix (n x p)
@@ -7,7 +9,7 @@
 #' @return hessian matrix (p x p)
 hessienne <- function(X, theta) {
 
-  # préparation de X
+  # preparation de X
   X <- as.matrix(prepare_x(X)) # taille n x p
 
   # Initialisation de H
@@ -75,7 +77,7 @@ calcul_p_values <- function(X, theta) {
 #'                     coefficients, standard errors, z-scores, and p-values
 #' @return regression coefficients
 print_coeffs <- function(dict_coeff) {
-  cat("\n Coefficients de la régression : \n")
+  cat("\n Regression Coefficients : \n")
 
   if (length(dict_coeff) == 2) {
     # Display only class 1 if binary
@@ -84,7 +86,7 @@ print_coeffs <- function(dict_coeff) {
   } else {
     # Display all classes if multiclass
     for (k in seq_len(length(dict_coeff))) {
-      cat("\nClasse", names(dict_coeff[k]), ":\n")
+      cat("\nClass", names(dict_coeff[k]), ":\n")
       print(dict_coeff[[k]])
     }
   }

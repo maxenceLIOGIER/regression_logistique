@@ -2,7 +2,7 @@
 % Please edit documentation in R/descente_gradient.R
 \name{descente_gradient}
 \alias{descente_gradient}
-\title{Fonction de descente de gradient pour régression logistique}
+\title{Gradient Descent Function for Logistic Regression}
 \usage{
 descente_gradient(
   X,
@@ -10,37 +10,32 @@ descente_gradient(
   theta,
   nb_iters = 1000,
   alpha = 0.01,
-  penalite = NULL,
+  penalty = NULL,
   lambda = 0,
   l1_ratio = 0
 )
 }
 \arguments{
-\item{X}{: matrice des caractéristiques}
+\item{X}{: feature matrix}
 
-\item{y}{: vecteur des étiquettes}
+\item{y}{: label vector}
 
-\item{theta}{: vecteur des paramètres}
+\item{theta}{: parameter vector}
 
-\item{nb_iters}{: nombre d'itérations à effectuer}
+\item{nb_iters}{: number of iterations to perform}
 
-\item{alpha}{: taux d'apprentissage}
+\item{alpha}{: learning rate}
 
-\item{penalite}{: type de régularisation : l1=lasso, l2=ridge, elasticnet}
+\item{penalty}{: type of regularization: l1=lasso, l2=ridge, elasticnet}
 
-\item{lambda}{: paramètre de régularisation}
+\item{lambda}{: regularization parameter}
 
-\item{l1_ratio}{: ratio de régularisation l1}
+\item{l1_ratio}{: l1 regularization ratio}
 }
 \value{
-Liste contenant les paramètres optimisés \code{theta}.
-
-liste des paramètres optimisés
+list of optimized parameters
 }
 \description{
-Cette fonction applique l'algorithme de descente de gradient pour optimiser les paramètres \code{theta}
-d'un modèle de régression logistique, avec possibilité d'ajouter une régularisation L1, L2 ou ElasticNet.
-}
-\examples{
-print("hi")
+applies the gradient descent to optimize the \code{theta} parameters
+with the possibility to add L1, L2, or ElasticNet regularization
 }

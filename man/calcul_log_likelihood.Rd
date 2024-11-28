@@ -2,26 +2,23 @@
 % Please edit documentation in R/calcul_metriques.R
 \name{calcul_log_likelihood}
 \alias{calcul_log_likelihood}
-\title{Fonction pour calculer la log-vraisemblance}
+\title{Function to Calculate Log-Likelihood}
 \usage{
 calcul_log_likelihood(X, y, theta)
 }
 \arguments{
-\item{X}{: matrice des caractéristiques}
+\item{X}{Feature matrix (n x p),
+n = number of individuals and p = number of variables}
 
-\item{y}{: vecteur des étiquettes}
+\item{y}{Label vector (n x 1)}
 
-\item{theta}{Matrice des paramètres (p x K), où p est le nombre de caractéristiques et K est le nombre de classes.}
+\item{theta}{Matrix of regression coefficients (p x K),
+p = number of features and K = number of classes.}
 }
 \value{
-La log-vraisemblance du modèle, un nombre réel qui mesure la qualité de l'ajustement du modèle aux données.
+The log-likelihood of the model
 }
 \description{
-Cette fonction calcule la log-vraisemblance du modèle de régression logistique en fonction
-des probabilités prédites pour chaque observation.
-
-calculer la log-vraisemblance du modèle
-}
-\examples{
-print("hi")
+This function calculates the log-likelihood of the model
+based on the predicted probabilities for each observation.
 }

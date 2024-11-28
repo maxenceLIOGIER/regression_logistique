@@ -2,35 +2,23 @@
 % Please edit documentation in R/predict_proba.R
 \name{predict_proba}
 \alias{predict_proba}
-\title{Prédire les probabilités d'appartenance aux classes}
+\title{Predicts class membership probabilities}
 \usage{
 predict_proba(X, theta)
 }
 \arguments{
-\item{X}{matrice ou data.frame des caractéristiques des individus
-où chaque ligne représente un individu et chaque colonne une caractéristique}
+\item{X}{matrix or data.frame of individuals' features
+row = an individual, column = a feature}
 
-\item{theta}{matrice des coefficients appris, où chaque colonne correspond à une classe
-et chaque ligne à une caractéristique}
+\item{theta}{matrix of learned coefficients
+column = a class, row = a feature}
 }
 \value{
-Une matrice des probabilités d'appartenance aux classes pour chaque individu,
-où chaque ligne correspond à un individu et chaque colonne à une classe.
-
-matrice des probabilités d'appartenance aux classes pour chaque individu
-chaque ligne correspond à un individu et chaque colonne à une classe
+matrix of class membership probabilities for each individual
+each row corresponds to an individual and each column to a class
 }
 \description{
-Cette fonction utilise les scores obtenus par la multiplication de la matrice
-des caractéristiques X avec les coefficients theta, puis applique la fonction softmax
-pour obtenir les probabilités d'appartenance aux différentes classes.
-
-Prédire les probabilités d'appartenance des individus aux classes.
-Cette fonction utilise les scores obtenus par la multiplication de la matrice
-des caractéristiques X avec les coefficients theta, puis applique la fonction softmax
-pour obtenir les probabilités d'appartenance aux différentes classes.
-}
-\examples{
-# Exemple d'utilisation
-print("hi")
+Predicts the probabilities of individuals belonging to classes.
+Uses the scores obtained by multiplying X with theta,
+then applies the softmax function to obtain the probabilities
 }

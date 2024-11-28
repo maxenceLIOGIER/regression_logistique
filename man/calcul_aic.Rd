@@ -2,29 +2,25 @@
 % Please edit documentation in R/calcul_metriques.R
 \name{calcul_aic}
 \alias{calcul_aic}
-\title{Fonction pour calculer l'AIC (Akaike Information Criterion)}
+\title{Function to Calculate AIC (Akaike Information Criterion)}
 \usage{
 calcul_aic(X, y, ll, theta)
 }
 \arguments{
-\item{X}{: matrice des caractéristiques}
+\item{X}{Feature matrix}
 
-\item{y}{: vecteur des étiquettes}
+\item{y}{Label vector (n x 1)}
 
-\item{ll}{: log-likelyhood du modèle}
+\item{ll}{Log-likelihood of the model}
 
-\item{theta}{: paramètres du modèle}
+\item{theta}{Matrix of regression coefficients (p x K),
+p = number of features and K = number of classes.}
 }
 \value{
-L'AIC du modèle, un nombre réel qui pénalise les modèles avec un grand nombre de paramètres.
+The AIC of the model
 }
 \description{
-Cette fonction calcule l'Akaike Information Criterion (AIC) du modèle de régression logistique.
-L'AIC permet de comparer plusieurs modèles en tenant compte de la qualité de l'ajustement et du nombre de paramètres utilisés.
-
-calculer l'AIC du modèle
-l'AIC sert à comparer des modèles, en pénalisant le nb de paramètres
-}
-\examples{
-print("hi")
+This function calculates the Akaike Information Criterion (AIC).
+The AIC allows comparing several models with each other.
+It takes into account the quality of the fit and the number of parameters used.
 }

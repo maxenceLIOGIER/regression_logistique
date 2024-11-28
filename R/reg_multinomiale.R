@@ -9,7 +9,6 @@
 #' @param lambda (numeric) Regularization parameter.
 #' @param l1_ratio (numeric) The ElasticNet mixing parameter, with 0 <= l1_ratio <= 1. Only used if penalty is 'elasticnet'.
 #' @return (matrix) Optimized parameters for each class.
-#' @method LogisticRegression multinomial_logistic_regression
 reg_multinomiale <- function(X, y, nb_iters, alpha,
                              penalty, lambda, l1_ratio) {
   X_new <- as.matrix(prepare_x(X))

@@ -2,28 +2,20 @@
 % Please edit documentation in R/p_values.R
 \name{calcul_p_values}
 \alias{calcul_p_values}
-\title{Calcul des p-values des coefficients de la régression}
+\title{Calculate p-values of regression coefficients}
 \usage{
 calcul_p_values(X, theta)
 }
 \arguments{
-\item{X}{: matrice des données}
+\item{X}{matrix of input data}
 
-\item{theta}{: matrice des paramètres taille p x K}
+\item{theta}{matrix of regression coefficients}
 }
 \value{
-Liste contenant des dataframes avec les coefficients, les erreurs standard, les z-scores, et les p-values pour chaque classe.
-
-liste de dataframes contenant :
-coeffs, erreurs std, z-scores et p-values
-pour chaque classe de la régression
+list of dataframes containing:
+coefficients, standard errors, z-scores, and p-values
+for each class of the regression
 }
 \description{
-Cette fonction calcule les p-values des coefficients de régression à partir de la matrice hessienne.
-Les p-values sont utilisées pour tester l'hypothèse nulle selon laquelle chaque coefficient est égal à zéro.
-
-Calcul des p-values des coefficients de la régression
-}
-\examples{
-print("Hi")
+Calculate p-values of regression coefficients
 }
