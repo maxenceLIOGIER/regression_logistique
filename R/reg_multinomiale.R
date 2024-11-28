@@ -3,6 +3,11 @@
 #'
 #' @param X (data.frame) Predictor variables (features) for the model.
 #' @param y (vector) Target variable (labels) for training the model.
+#' @param nb_iters (integer) Number of iterations for the gradient descent.
+#' @param alpha (numeric) Learning rate for the gradient descent.
+#' @param penalty (character) Type of regularization: l1=lasso, l2=ridge, elasticnet.
+#' @param lambda (numeric) Regularization parameter.
+#' @param l1_ratio (numeric) The ElasticNet mixing parameter, with 0 <= l1_ratio <= 1. Only used if penalty is 'elasticnet'.
 #' @return (matrix) Optimized parameters for each class.
 #' @method LogisticRegression multinomial_logistic_regression
 reg_multinomiale <- function(X, y, nb_iters, alpha,
