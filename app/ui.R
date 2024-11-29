@@ -128,21 +128,39 @@ ui <- dashboardPage(
       # Menu 3 : Modélisation et prédiction
       tabItem(tabName = "menu3",
               tabsetPanel(
-                tabPanel("Préparation des données",
-                         selectInput("target", "Variable cible", choices = NULL),
-                         uiOutput("features_ui"),
-                         actionButton("prepare_data", "Préparer les données")
+                tabPanel("1. Choix des variables et Split Train/Test",
+                         fluidRow(
+                           column(6, 
+                                  selectInput("target", "Variable cible", choices = NULL)
+                           ),
+                           column(6,
+                                  checkboxGroupInput("features", "Variables explicatives", choices = NULL, inline = TRUE)
+                           )
+                         ),
+                         numericInput("split_ratio", "Proportion des données d'entraînement (%)", value = 70, min = 50, max = 90),
+                         actionButton("prepare_data", "Préparer les données"),
+                         verbatimTextOutput("split_summary")
                 ),
-                tabPanel("Lancer la modélisation",
-                         verbatimTextOutput("model_summary"),
-                         actionButton("run_model", "Lancer la régression logistique")
+                tabPanel("2. Entraîner le modèle",
+                         actionButton("run_model", "Lancer l'entraînement"),
+                         #withSpinner(verbatimTextOutput("model_summary"), type = 4, color = "#0d6efd")
                 ),
-                tabPanel("Prédiction",
+                tabPanel("3. Validation et Prédictions",
                          fileInput("new_data", "Importer des données pour la prédiction"),
+                         actionButton("run_prediction", "Faire les prédictions"),
                          verbatimTextOutput("prediction_results")
+                ),
+                tabPanel("4. Résultats",
+                         h3("Résumé du modèle"),
+                         verbatimTextOutput("model_summary"),  # Résumé du modèle ici
+                         h3("Importance des variables"),
+                         plotOutput("variable_importance_plot")  # Graphique d'importance ici
                 )
+                
               )
       )
+  
+      
     )
   )
 )
