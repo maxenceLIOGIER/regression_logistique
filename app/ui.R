@@ -143,21 +143,29 @@ ui <- dashboardPage(
                          actionButton("prepare_data", "Préparer les données"),
                          verbatimTextOutput("split_summary")
                 ),
+                
+      
+                
                 tabPanel("2. Entraîner le modèle",
                          actionButton("run_model", "Lancer l'entraînement"),
-                         #withSpinner(verbatimTextOutput("model_summary"), type = 4, color = "#0d6efd")
+                         h4("Résumé du Modèle"),
+                         verbatimTextOutput("model_summary"),  # Affiche le résumé structuré
                 ),
+                
+                
+                
+                
                 tabPanel("3. Validation et Prédictions",
                          fileInput("new_data", "Importer des données pour la prédiction"),
                          actionButton("run_prediction", "Faire les prédictions"),
                          verbatimTextOutput("prediction_results")
                 ),
+                
                 tabPanel("4. Résultats",
-                         h3("Résumé du modèle"),
-                         verbatimTextOutput("model_summary"),  # Résumé du modèle ici
                          h3("Importance des variables"),
-                         plotOutput("variable_importance_plot")  # Graphique d'importance ici
+                         plotOutput("variable_importance_plot")  # Affichage du graphique
                 )
+                
                 
               )
       )

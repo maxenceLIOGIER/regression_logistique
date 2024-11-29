@@ -229,39 +229,50 @@ server <- function(input, output, session) {
   
   # Entraîner le modèle
   observeEvent(input$run_model, {
-    req(reactiveTrainData())
+    req(reactiveTrainData())  # Vérification des données d'entraînement
     
+    # Récupérer les données et les variables sélectionnées
     train_data <- reactiveTrainData()
     target_var <- input$target
     features <- input$features
     
     # Identifier le type de variable cible
     target_levels <- length(unique(train_data[[target_var]]))
+    model_type <- if (target_levels == 2) "binaire" else "multinomiale"  # Binaire ou multinomial
     
-    if (target_levels == 2) {
-      # Modèle binaire (logistique)
-      model <- glm(as.formula(paste(target_var, "~", paste(features, collapse = "+"))), 
-                   data = train_data, family = "binomial")
-      model_type <- "binaire"
-    } else {
-      # Modèle multinomial
-      train_data[[target_var]] <- factor(train_data[[target_var]])
-      model <- multinom(as.formula(paste(target_var, "~", paste(features, collapse = "+"))), 
-                        data = train_data)
-      model_type <- "multinomiale"
-    }
+    # Préparer les données
+    train_data[[target_var]] <- factor(train_data[[target_var]])  # Convertir en facteur
+    X <- train_data[, features]
+    y <- train_data[[target_var]]
     
-    reactiveModel(model)  # Stocker le modèle dans une réactive
+    # Initialiser et entraîner le modèle
+    model <- LogisticRegression$new(
+      nb_iters = 500,
+      alpha = 0.01,
+      penalty = "l1",  # Exemple : régularisation Lasso
+      lambda = 0.05
+    )
+    model <- model$fit(X, y)  # Entraîner
     
-    # Afficher le résumé du modèle
+    # Stocker le modèle dans une réactive
+    reactiveModel(model)
+    
     output$model_summary <- renderPrint({
-      cat("Type de modèle : Régression", model_type, "\n\n")
-      summary(model)
+      req(reactiveModel())  # Vérifie que le modèle est disponible
+      model <- reactiveModel()
+      
+      # Récupérer le résumé du modèle
+      summary_output <- capture.output(model$summary())  # Capture la sortie de la méthode summary()
+      
+      # Afficher la sortie du résumé de manière lisible dans Shiny
+      cat(paste(summary_output, collapse = "\n"))
     })
+    
     
     # Notification de succès
     showNotification("Entraînement terminé avec succès !", type = "message")
   })
+
   
   
   # Prédictions
@@ -271,47 +282,34 @@ server <- function(input, output, session) {
     model <- reactiveModel()
     test_data <- reactiveTestData()
     
-    if (inherits(model, "glm")) {
-      predictions <- predict(model, newdata = test_data, type = "response")
-      pred_classes <- ifelse(predictions > 0.5, levels(test_data[[input$target]])[2], 
-                             levels(test_data[[input$target]])[1])
-    } else {
-      pred_classes <- predict(model, newdata = test_data)
-    }
+    
+    # Vérification que le modèle est bien une instance de LogisticRegression
+
+    # Préparation des prédicteurs
+    X <- test_data[, setdiff(names(test_data), input$target), drop = FALSE]
+    
+    # Prédictions des classes
+    pred_classes <- model$predict(X)
+  
     
     output$prediction_results <- renderPrint({
-      confusion <- caret::confusionMatrix(as.factor(pred_classes), test_data[[input$target]])
+      confusion <- (model$test(as.factor(pred_classes), test_data[[input$target]], confusion_matrix = TRUE))
       confusion
+ 
     })
   })
   
-  # Importance des variables
+  
+  # Affichage de l'importance des variables
   output$variable_importance_plot <- renderPlot({
-    req(reactiveModel())
-    model <- reactiveModel()
+    req(reactiveModel())  # Vérifie que le modèle est bien chargé
     
-    if (inherits(model, "glm")) {
-      # Importance pour modèle logistique
-      importance <- caret::varImp(model, scale = TRUE)
-      ggplot(importance, aes(Overall, reorder(Variable, Overall))) +
-        geom_bar(stat = "identity", fill = "steelblue") +
-        labs(title = "Importance des Variables (Logistique)", x = "Importance", y = "Variable") +
-        theme_minimal()
-    } else if (inherits(model, "multinom")) {
-      # Importance pour modèle multinomial (approximation)
-      coefs <- summary(model)$coefficients
-      var_importance <- apply(abs(coefs), 2, mean)  # Moyenne des coefficients absolus
-      importance_df <- data.frame(Variable = names(var_importance), Importance = var_importance)
-      
-      ggplot(importance_df, aes(Importance, reorder(Variable, Importance))) +
-        geom_bar(stat = "identity", fill = "darkorange") +
-        labs(title = "Importance des Variables (Multinomiale)", x = "Importance", y = "Variable") +
-        theme_minimal()
-    } else {
-      # Modèle non pris en charge
-      showNotification("Impossible de calculer l'importance des variables pour ce modèle.", type = "error")
-    }
+    model <- reactiveModel()  # Récupérer le modèle réactif
+    
+    # Appeler la méthode pour récupérer l'importance des variables et générer le graphique
+    model$var_importance(graph = TRUE) 
   })
+  
   
 }
   

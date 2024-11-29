@@ -10,6 +10,7 @@ library(dplyr)             # Manipulation de données
 library(tidyr)             # Organisation des données
 library(stringr)           # Manipulation de chaînes de caractères
 library(nnet)
+library(LogisticRegression)
 
 # Bibliothèques pour les visualisations
 library(ggplot2)           # Graphiques de qualité
@@ -27,4 +28,3 @@ library(shinyjs)           # Interactions JavaScript avec Shiny
 library(shinyalert)        # Notifications et alertes stylisées
 library(plotly)            # Graphiques interactifs
 library(shinycssloaders)
-
