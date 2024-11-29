@@ -10,6 +10,8 @@ ui <- dashboardPage(
     )
   ),
   dashboardBody(
+    # Inclusion du fichier CSS
+    tags$link(rel = "stylesheet", type = "text/css", href = "style.css"),
     tabItems(
       # Page d'accueil
       tabItem(tabName = "accueil",
