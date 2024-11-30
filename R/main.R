@@ -7,7 +7,6 @@
 # source("R/p_values.R")
 # source("R/descente_gradient.R")
 # source("R/reg_multinomiale.R")
-# source("R/print_coeffs.R")
 
 #' LogisticRegression Class
 #'
@@ -19,7 +18,6 @@
 #' @include predict_proba.R
 #' @include p_values.R
 #' @include descente_gradient.R
-#' @include print_coeffs.R
 #'
 #' @importFrom R6 R6Class
 #' @import ggplot2
@@ -279,37 +277,37 @@ LogisticRegression <- R6Class("LogisticRegression",
 )
 
 
-# # Exemple d'utilisation
-# set.seed(123)
-# setwd("C:/Users/maxen/Documents/_SISE/Prog Stat sous R/Projet")
-# df <- read.csv("data_69.csv", sep = "|")
-# # head(df)
+# Exemple d'utilisation
+set.seed(123)
+setwd("C:/Users/maxen/Documents/_SISE/Prog Stat sous R/Projet")
+df <- read.csv("data_69.csv", sep = "|")
+# head(df)
 
-# # Mise en forme des données
-# del_col <- c("Nom commune", "Date réception DPE", "Latitude", "Longitude",
-#              "Date_réception_DPE_graph", "Adresse_.BAN.", "X_geopoint", "Nom__commune_.BAN.")
-# df <- df[, !(names(df) %in% del_col)]
-# df <- na.omit(df) # Suppression des lignes contenant des NA
+# Mise en forme des données
+del_col <- c("Nom commune", "Date réception DPE", "Latitude", "Longitude",
+             "Date_réception_DPE_graph", "Adresse_.BAN.", "X_geopoint", "Nom__commune_.BAN.")
+df <- df[, !(names(df) %in% del_col)]
+df <- na.omit(df) # Suppression des lignes contenant des NA
 
-# # Définition des variables explicatives et de la variable cible
-# y <- df$"Etiquette_DPE"
-# X <- df[, !(names(df) %in% c("Etiquette_DPE"))]
+# Définition des variables explicatives et de la variable cible
+y <- df$"Etiquette_DPE"
+X <- df[, !(names(df) %in% c("Etiquette_DPE"))]
 
-# y <- as.factor(y)
-# X$Code_postal_.BAN. <- as.factor(X$Code_postal_.BAN.)
+y <- as.factor(y)
+X$Code_postal_.BAN. <- as.factor(X$Code_postal_.BAN.)
 
-# # Separation des donnees en train et test
-# index <- sample(seq_len(nrow(df)), nrow(df) * 0.7)
-# X_train <- X[index, ]
-# y_train <- y[index]
-# X_test <- X[-index, ]
-# y_test <- y[-index]
+# Separation des donnees en train et test
+index <- sample(seq_len(nrow(df)), nrow(df) * 0.7)
+X_train <- X[index, ]
+y_train <- y[index]
+X_test <- X[-index, ]
+y_test <- y[-index]
 
-# model <- LogisticRegression$new(nb_iters=500)
-# fit_time <- system.time({
-#   model <- model$fit(X_train, y_train)
-# })
-# print(fit_time)
+model <- LogisticRegression$new(nb_iters=10)
+fit_time <- system.time({
+  model <- model$fit(X_train, y_train)
+})
+print(fit_time)
 
 # model$summary()
 # model$print()
