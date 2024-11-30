@@ -27,6 +27,15 @@ prepare_x <- function(X) {
   if (length(quali) > 0) {
     quali_data <- X[, quali, drop = FALSE]
 
+    # Check if columns are factors and have levels
+    quali_data <- lapply(quali_data, function(x) {
+      if (!is.factor(x)) {
+        x <- as.factor(x)
+      }
+      return(x)
+    })
+    quali_data <- as.data.frame(quali_data)
+
     # Filter columns with more than 2 levels
     quali_to_encode <- quali[sapply(quali_data, function(x) length(levels(x)) > 2)]
     quali_to_keep <- quali[sapply(quali_data, function(x) length(levels(x)) == 2)]
@@ -34,7 +43,7 @@ prepare_x <- function(X) {
 
     # One-hot encoding
     quali_encoded_list <- lapply(quali_to_encode, function(col) {
-      model.matrix(~ . , data = X[, col, drop = FALSE])[ , -1]
+      model.matrix(~ ., data = X[, col, drop = FALSE])[ , -1]
     })
     quali_encoded <- do.call(cbind, quali_encoded_list)
 
@@ -57,12 +66,13 @@ prepare_x <- function(X) {
 
   # Adding an intercept column, if not already present
   if (sum(colnames(X) == "intercept") == 0) {
-  X <- cbind(1, X)
-  colnames(X)[1] <- "intercept"
+    X <- cbind(1, X)
+    colnames(X)[1] <- "intercept"
   }
 
   # Conversion of all columns to numeric
   X[] <- sapply(X, as.numeric)
   X <- as.data.frame(X)
+
   return(X)
 }

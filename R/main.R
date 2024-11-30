@@ -7,6 +7,7 @@
 # source("R/p_values.R")
 # source("R/descente_gradient.R")
 # source("R/reg_multinomiale.R")
+# source("R/print_coeffs.R")
 
 #' LogisticRegression Class
 #'
@@ -18,6 +19,7 @@
 #' @include predict_proba.R
 #' @include p_values.R
 #' @include descente_gradient.R
+#' @include print_coeffs.R
 #'
 #' @importFrom R6 R6Class
 #' @import ggplot2
@@ -49,8 +51,10 @@ LogisticRegression <- R6Class("LogisticRegression",
     #' @field summary_values (vector) A vector containing the log-likelihood and AIC values.
     summary_values = c(ll = NULL, aic = NULL),
 
+    #' @field is_too_big (logical) Whether the dataset is too large to calculate p-values
+    is_too_big = FALSE,
 
-#    #' @title Class Constructor, initializes the logistic regression model
+
     #' @description Initializes the Logistic Regression model with specified parameters.
     #'
     #' @param nb_iters (integer) Number of iterations for gradient descent. Default is 500.
@@ -70,7 +74,6 @@ LogisticRegression <- R6Class("LogisticRegression",
     },
 
 
-#    #' @title Training of the logistic regression model
     #' @description Trains the logistic regression model using provided data.
     #'
     #' @param X (data.frame) Training predictor variables (features).
@@ -79,24 +82,36 @@ LogisticRegression <- R6Class("LogisticRegression",
     #' @method LogisticRegression fit
     #' @export
     fit = function(X, y) {
+      # new object
       new_model <- self$clone()
+
+      # Train the model
       theta <- reg_multinomiale(X, y, self$nb_iters, self$alpha,
                                 self$penalty, self$lambda, self$l1_ratio)
-      dict_coeff <- calcul_p_values(X, theta)
 
+      # Calculate p-values
+      # If the dataset is too large, p-values are not calculated
+      if (nrow(X) > 10000) {
+        new_model$is_too_big <- TRUE
+        cat("The dataset is too large to calculate p-values (>10 000 rows)\n")
+      } else {
+        dict_coeff <- calcul_p_values(X, theta)
+        new_model$dict_coeff <- dict_coeff
+      }
+
+      # Calculate log-likelihood and AIC
       ll <- calcul_log_likelihood(X, y, theta)
       aic <- calcul_aic(X, y, ll, theta)
 
+      # Assign values to the new model
       new_model$theta <- theta
       new_model$summary_values["ll"] <- ll
       new_model$summary_values["aic"] <- aic
-      new_model$dict_coeff <- dict_coeff
 
       return(new_model)
     },
 
 
-#    #' @title Predicts class membership probabilities
     #' @description Predicts the probabilities of individuals belonging to classes
     #'              Uses the scores obtained by multiplying X with theta,
     #'              then applies the softmax function to obtain the probabilities
@@ -111,7 +126,6 @@ LogisticRegression <- R6Class("LogisticRegression",
     },
 
 
-#    #' @title Predicts the class of each individual
     #' @description Predicts the class for each observation in the dataset.
     #'
     #' @param X (data.frame) New data (features) for which to predict the class.
@@ -130,7 +144,6 @@ LogisticRegression <- R6Class("LogisticRegression",
     },
 
 
-#    #' @title Metrics to evaluate the model
     #' @description Evaluates the model performance using various metrics :
     #'              accuracy, precision, recall, f1 score, and confusion matrix
     #'
@@ -175,7 +188,6 @@ LogisticRegression <- R6Class("LogisticRegression",
     },
 
 
-#    #' @title Coefficients of the regressions
     #' @description Prints the coefficients of the trained model.
     #'
     #' @return (list) A list of coefficients for each class.
@@ -198,7 +210,6 @@ LogisticRegression <- R6Class("LogisticRegression",
     },
 
 
-#    #' @title Model metrics and coefficients
     #' @description Displays a summary of model metrics and coefficients.
     #'
     #' @return (void) Print summary to the console.
@@ -208,13 +219,21 @@ LogisticRegression <- R6Class("LogisticRegression",
         stop("The model is not trained yet")
       }
 
-      print_coeffs(self$dict_coeff)
+      # Display coefficients
+      # Display p-values if the dataset is not too large
+      if (!self$is_too_big) {
+        print_coeffs(self$dict_coeff)
+      } else {
+        cat("The dataset is too large to display p-values (>10 000 rows)\n")
+        coeffs <- self$print()
+        cat("\n")
+      }
+
       cat("Log-likelihood:", self$summary_values["ll"], "\n")
       cat("AIC:", self$summary_values["aic"], "\n")
     },
 
 
-#    #' @title importance of variables to the model
     #' @description Computes the importance of the variables based on the trained model.
     #'
     #' @param graph (logical) Whether to display the variable importance graph. Default is TRUE.
@@ -259,22 +278,40 @@ LogisticRegression <- R6Class("LogisticRegression",
 
 # Exemple d'utilisation
 set.seed(123)
-data(iris)
+setwd("C:/Users/maxen/Documents/_SISE/Prog Stat sous R/Projet")
+df <- read.csv("data_69.csv", sep = "|")
+# head(df)
+
+# Mise en forme des données
+del_col <- c("Nom commune", "Date réception DPE", "Latitude", "Longitude",
+             "Date_réception_DPE_graph", "Adresse_.BAN.", "X_geopoint")
+df <- df[, !(names(df) %in% del_col)]
+df <- na.omit(df) # Suppression des lignes contenant des NA
+
+# Définition des variables explicatives et de la variable cible
+y <- df$"Etiquette_DPE"
+X <- df[, !(names(df) %in% c("Etiquette_DPE"))]
+
+y <- as.factor(y)
 
 # Separation des donnees en train et test
-X <- iris[, -c(5)]
-y <- iris$Species
-
-index <- sample(seq_len(nrow(iris)), nrow(iris) * 0.7)
-X_train <- X[index, ] # n x p
-y_train <- y[index] # nF x 1
+index <- sample(seq_len(nrow(df)), nrow(df) * 0.7)
+X_train <- X[index, ]
+y_train <- y[index]
 X_test <- X[-index, ]
 y_test <- y[-index]
 
-# Entrainement du modele
-model <- LogisticRegression$new(penalty = NULL, lambda = 0,
-                                l1_ratio = 0.5)
-model <- model$fit(X_train, y_train)
+nrow(X_train)
+
+# class(y_train)
+# length(y_train)
+# nrow(X_train)
+# levels(y_train)
+
+model <- LogisticRegression$new()
+fit_time <- system.time({
+  model <- model$fit(X_train, y_train)
+})
 model$summary()
 # model$print()
 
@@ -284,48 +321,3 @@ model$var_importance(graph=TRUE)
 # Prediction sur les donnees test
 y_pred <- model$predict(X_test)
 print(model$test(y_test, y_pred, confusion_matrix = TRUE))
-
-
-# # Exemple d'utilisation
-# set.seed(123)
-# setwd("C:/Users/maxen/Documents/_SISE/Prog Stat sous R/Projet")
-# data <- read.csv("framingham.csv")
-# # head(data)
-
-# # supprimer lignes manquantes
-# data <- na.omit(data)
-
-# # il faut s'assurer que les variables quali sont bien encodees
-# data$male <- as.factor(data$male)
-# data$education <- as.factor(data$education)
-# data$currentSmoker <- as.factor(data$currentSmoker)
-# data$BPMeds <- as.factor(data$BPMeds)
-# data$prevalentStroke <- as.factor(data$prevalentStroke)
-# data$prevalentHyp <- as.factor(data$prevalentHyp)
-# data$diabetes <- as.factor(data$diabetes)
-# data$TenYearCHD <- as.factor(data$TenYearCHD)
-
-# # X y
-# X <- data[, -c(16)]
-# y <- data$TenYearCHD
-
-# # Separation des donnees en train et test
-# index <- sample(1:nrow(data), nrow(data) * 0.7)
-# X_train <- X[index, ]
-# y_train <- y[index]
-# X_test <- X[-index, ]
-# y_test <- y[-index]
-
-# model <- LogisticRegression$new()
-# model <- model$fit(X_train, y_train)
-# predictions <- model$predict(X_test)
-
-# print(model$test(y_test, predictions, confusion_matrix = TRUE))
-
-# model$summary()
-
-
-# # glm
-# data2 <- data.frame(prepare_x(data))
-# glm_model <- glm(TenYearCHD ~ . - 1, data = data[index, ], family = binomial)
-# summary(glm_model)
