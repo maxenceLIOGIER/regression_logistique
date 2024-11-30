@@ -289,7 +289,7 @@ LogisticRegression <- R6Class("LogisticRegression",
 # df <- df[, !(names(df) %in% del_col)]
 # df <- na.omit(df) # Suppression des lignes contenant des NA
 
-# # Définition des variables explicatives et de la variable cible
+# # Definition des variables explicatives et de la variable cible
 # y <- df$"Etiquette_DPE"
 # X <- df[, !(names(df) %in% c("Etiquette_DPE"))]
 
