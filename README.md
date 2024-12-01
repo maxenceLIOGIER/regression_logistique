@@ -4,6 +4,7 @@ L'optimisation de la fonction de coût se fera à l'aide d'une descente de gradi
 
 Voici une description détaillée de l'architecture du package LogisticRegression:
 
+```r
 LogisticRegression/
 │
 ├── DESCRIPTION                 # Metadata for the package
@@ -22,6 +23,7 @@ LogisticRegression/
 │
 └── /data                       # Datasets provided with the package
    └── iris.RData               # Example data file
+```
 
 ## 1. Installation du package sur R
 
