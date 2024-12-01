@@ -276,7 +276,7 @@ LogisticRegression <- R6Class("LogisticRegression",
     },
     #' @description Exports the Logistic Regression model to PMML format.
     #' @param file_path (character) Path to save the PMML file. Default is "model.pmml".
-    #' @param target_name (character) The name of the target variable. Default is NULL, which assumes the last column is the target.
+    #' @param target_name (character) The name of the target variable.
     #' @return Saves the PMML file at the specified location.
     #' @method LogisticRegression export_pmml
     export_pmml = function(file_path = "model.pmml", target_name) {
@@ -345,5 +345,4 @@ model <- LogisticRegression$new(penalty = NULL, lambda = 0,
                                 l1_ratio = 0.5)
 model <- model$fit(X_train, y_train)
 model$summary()
-pmml_content <- model$export_pmml(target_name = "Species")
-print(pmml_content)
+model$export_pmml(target_name = "Species")

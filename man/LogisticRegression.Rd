@@ -235,7 +235,7 @@ Exports the Logistic Regression model to PMML format.
 \describe{
 \item{\code{file_path}}{(character) Path to save the PMML file. Default is "model.pmml".}
 
-\item{\code{target_name}}{(character) The name of the target variable. Default is NULL, which assumes the last column is the target.}
+\item{\code{target_name}}{(character) The name of the target variable.}
 }
 \if{html}{\out{</div>}}
 }

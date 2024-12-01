@@ -2,9 +2,6 @@
 
 export(LogisticRegression)
 import(XML)
-import(doParallel)
-import(foreach)
 import(ggplot2)
-import(parallel)
 importFrom(R6,R6Class)
 importFrom(stats,pnorm)
