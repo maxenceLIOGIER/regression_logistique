@@ -19,6 +19,7 @@ Une fois devtools installé, vous pouvez installer notre package directement dep
 ```r
 devtools::install_github("votre_nom_utilisateur/votre_repo")
 ```
+Pour plus de détails, vous sur le fonctionnement du package vous pouvez lire le tuorial.md en anglais qui explique à peu près tout de A à Z.
 
 
 ## Application shiny 
@@ -38,6 +39,7 @@ Voici l'architecture dossier de l'application shiny :
     └── images.jpg     # Image utilisée dans l'application
 
 ```
+Pour exécuter l'application Shiny, placez-vous dans le répertoire contenant **global.R**, **ui.R** et **server.R**, puis lancez l'application avec **runApp()**. Assurez-vous que tous les packages mentionnés dans **global.R** sont installés sur votre machine avec install.packages().
 
 ### Fonctionnalités de l'application Shiny
 L'application Shiny permet de naviguer à travers plusieurs pages grâce à une barre latérale. Les principales pages de l'application sont les suivantes :
