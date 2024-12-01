@@ -1,79 +1,292 @@
+/* Global Variables for Colors */
 :root {
-  /* Palette de couleurs */
-  --color-bg: #fffff8;           /* Fond général */
-  --color-primary: #4b0082;      /* Indigo pour les boutons et les éléments principaux */
-  --color-secondary: #7f00ff;    /* Violet pour des éléments de contraste */
-  --color-accent: #48c9b0;       /* Vert d'accent pour les éléments interactifs */
-  --color-text: #2c3e50;         /* Texte principal */
-  --color-subtext: #6c757d;      /* Texte secondaire, moins important */
-  --color-border: #d1d9e6;       /* Couleur de bordure pour encadrer les sections */
-
-  /* Typographie */
-  --font-primary: 'Arial', sans-serif;
-  --font-heading: 'Helvetica Neue', sans-serif;
+  --background-color: #f0f8f7; /* Bleu clair pastel */
+  --text-color: #2c3e50; /* Bleu-gris pour le texte */
+  --header-bg-color: #2ecc71; /* Vert pastel */
+  --header-border-color: #27ae60; /* Vert légèrement plus foncé */
+  --logo-bg-color: #27ae60; /* Vert pastel */
+  --logo-hover-bg-color: #1e8449; /* Vert légèrement plus foncé */
+  --sidebar-bg-color: #1abc9c; /* Vert d'eau */
+  --sidebar-hover-bg-color: #16a085; /* Vert d'eau légèrement plus foncé */
+  --sidebar-active-bg-color: #16a085; /* Vert d'eau foncé */
+  --box-border-color: #27ae60; /* Vert pastel */
+  --box-shadow-color: rgba(0, 0, 0, 0.1); /* Ombre légère */
+  --box-header-bg-color: #f7fdfc; /* Blanc cassé avec une teinte verte */
+  --btn-primary-bg-color: #27ae60; /* Vert pastel */
+  --btn-primary-hover-bg-color: #16a085; /* Vert foncé */
+  --data-table-header-bg-color: #27ae60; /* Vert pastel */
+  --data-table-hover-bg-color: #dff0ea; /* Vert clair */
+  --footer-bg-color: #2ecc71; /* Vert pastel */
+  --footer-border-color: #27ae60; /* Vert légèrement plus foncé */
+  --notification-bg-color: #3498db; /* Bleu pastel */
+  --notification-border-color: #2980b9; /* Bleu foncé */
+  --plot-bg-color: #ffffff; /* Blanc */
+  --plot-border-color: #dcdcdc; /* Gris clair */
+  --tab-bg-color: #ffffff; /* Blanc */
+  --tab-border-color: #27ae60; /* Vert pastel */
+  --tab-active-bg-color: #2ecc71; /* Vert pastel */
+  --tab-active-text-color: #ffffff; /* Texte blanc */
+  --tab-inactive-bg-color: #f0f8f7; /* Gris très clair */
 }
 
+/* Global Styling */
 body {
-  background-color: var(--color-bg);
-  font-family: var(--font-primary);
-  color: var(--color-text);
+  background-color: var(--background-color) !important;
+  font-family: 'Arial' !important, sans-serif;
+  color: var(--text-color) !important;
 }
 
-h1, h2, h3, h4, h5, h6 {
-  font-family: var(--font-heading);
-  color: var(--color-text);
-  font-weight: bold;
+/* Header Styling */
+.main-header .navbar {
+  background-color: var(--header-bg-color) !important;
+  border-bottom: 2px solid var(--header-border-color) !important;
+ 
+   
 }
 
-h4 {
-  color: var(--color-primary);
+.main-header .logo {
+  background-color: var(--sidebar-bg-color) !important;
+  color: white !important;
+  font-weight: bold !important;
+  font-size: 15px !important;
+  line-height: 1.5 !important;
+  margin-top: 15px;
 }
 
-#run_model {
-  background-color: var(--color-primary);
+
+.main-header .logo:hover {
+  background-color: var(--logo-hover-bg-color) !important;
+  margin-top: 15px;
+}
+
+/* Sidebar Styling */
+.main-sidebar {
+  padding-top: 10rem;
+  background-color: var(--sidebar-bg-color) !important;
+  color: white !important;
+}
+
+.sidebar-menu > li > a {
+  color: white !important;
+  font-weight: bold !important;
+}
+
+.sidebar-menu > li > a:hover {
+  background-color: var(--sidebar-hover-bg-color) !important;
+  color: #ecf0f1 !important;
+}
+
+.sidebar-menu > .active > a {
+  background-color: var(--sidebar-active-bg-color) !important;
+  color: #ecf0f1 !important;
+}
+
+/* Box Styling */
+.box {
+  border-top: 3px solid var(--box-border-color) !important;
+  background-color: var(--plot-bg-color) !important;
+  box-shadow: 0px 2px 4px var(--box-shadow-color) !important;
+}
+
+.box-primary {
+  border-top-color: var(--box-border-color) !important;
+}
+
+.box-warning {
+  border-top-color: #f1c40f !important;
+}
+
+.box-info {
+  border-top-color: #3498db !important;
+}
+
+.box-header {
+  background-color: var(--box-header-bg-color) !important;
+  color: var(--text-color) !important;
+  font-weight: bold !important;
+}
+
+/* Button Styling */
+.btn {
+  border-radius: 5px !important;
+  font-weight: bold !important;
+}
+
+.btn-primary {
+  background-color: var(--btn-primary-bg-color) !important;
+  border-color: var(--sidebar-hover-bg-color) !important;
+  color: white !important;
+}
+
+.btn-primary:hover {
+  background-color: var(--btn-primary-hover-bg-color) !important;
+  border-color: var(--btn-primary-hover-bg-color) !important;
+  color: white !important;
+}
+
+/* DataTable Styling */
+.dataTables_wrapper {
+  background-color: var(--plot-bg-color) !important;
+  border: 1px solid var(--plot-border-color) !important;
+  padding: 15px !important;
+  border-radius: 5px !important;
+}
+
+table.dataTable thead th {
+  background-color: var(--data-table-header-bg-color) !important;
+  color: white !important;
+}
+
+table.dataTable tbody tr:hover {
+  background-color: var(--data-table-hover-bg-color) !important;
+}
+
+/* Footer Styling */
+.main-footer {
+  background-color: var(--footer-bg-color) !important;
+  color: white !important;
+  text-align: center !important;
+  padding: 10px !important;
+  font-size: 14px !important;
+  border-top: 2px solid var(--footer-border-color) !important;
+}
+
+/* Custom Notifications */
+.shiny-notification {
+  background-color: var(--notification-bg-color) !important;
   color: white;
-  font-weight: bold;
-  border: none;
-  padding: 10px 20px;
+  border-left: 5px solid var(--notification-border-color);
+  box-shadow: 0px 2px 6px rgba(0, 0, 0, 0.2);
+}
+
+/* Plot Styling */
+.plot-output {
+  background-color: var(--plot-bg-color);
+  border: 1px solid var(--plot-border-color);
   border-radius: 5px;
-  cursor: pointer;
+  padding: 15px;
+  box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.1);
 }
 
-#run_model:hover {
-  background-color: var(--color-secondary);
+/* Tabs Styling */
+.nav-tabs {
+  border-bottom: 2px solid var(--tab-border-color);
 }
 
-.sidebar-panel, .main-panel {
-  background-color: var(--color-secondary);
-  border: 1px solid var(--color-border);
-  border-radius: 8px;
-  padding: 20px;
-  margin: 10px 0;
+.nav-tabs .nav-item.show .nav-link, .nav-tabs .nav-link.active {
+  background-color: var(--tab-active-bg-color) !important;
+  color: var(--tab-active-text-color) !important;
 }
 
-a {
-  color: var(--color-accent);
-  text-decoration: none;
+.nav-tabs .nav-link {
+  border: 1px solid var(--tab-border-color);
+  border-radius: 5px 5px 0 0;
+  color: var(--text-color) !important;
+  background-color: var(--tab-inactive-bg-color) !important;
 }
 
-a:hover {
-  color: var(--color-secondary);
+.nav-tabs .nav-link:hover {
+  background-color: var(--tab-active-bg-color) !important;
+  color: var(--tab-active-text-color) !important;
 }
 
-table {
-  border: 1px solid var(--color-border);
-  border-collapse: collapse;
-  width: 100%;
+.nav-tabs .nav-item {
+  margin-bottom: -1px;
 }
 
-th, td {
-  border: 1px solid var(--color-border);
-  padding: 8px;
-  text-align: left;
+/* Global box styling */
+.profile-box {
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  padding: 15px;
+  background-color: #f0f8f7 !important;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1) !important;
+  border-radius: 10px !important;
 }
 
-th {
-  background-color: var(--color-primary);
-  color: white;
+/* Profile icon styling */
+.profile-icon {
+  font-size: 40px;
+  color: #27ae60;
+  margin-right: 15px;
+}
+
+/* Profile text container */
+.profile-text {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+/* Profile name styling */
+.profile-name {
+  font-size: 18px;
+  font-weight: bold;
+  margin-bottom: 5px;
+}
+
+/* Email icon and text */
+.email-icon {
+  margin-right: 8px;
+  font-size: 18px;
+  color: #27ae60;
+}
+
+.profile-box p {
+  font-size: 16px;
+  margin: 0;
+  color: #2c3e50;
+}
+
+/* Styles généraux pour la boîte de bienvenue */
+.box-primary {
+  border-radius: 10px !important;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1) !important;
+  padding: 20px !important;
+  font-size: 16px;
+}
+
+/* Icônes dans la liste */
+.box ul li {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 10px;
+  font-size: 16px;
+}
+
+.box ul {
+  list-style-type: none; /* Supprime les puces */
+  padding: 0;            /* Supprime le retrait par défaut */
+  margin: 0;             /* Supprime la marge par défaut */
+}
+
+.box ul li .fa {
+  font-size: 20px;
+  margin-right: 10px;
+}
+
+/* Image */
+img {
+  border-radius: 10px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
+}
+
+
+/* Responsive behavior */
+@media (max-width: 768px) {
+  .profile-box {
+    flex-direction: column;
+    text-align: center;
+  }
+
+  .profile-icon {
+    margin-bottom: 10px;
+  }
+
+  .profile-text {
+    align-items: center;
+  }
 }
 
