@@ -76,7 +76,9 @@ Cette page utilise notre package de régression logistique multinomiale pour eff
 ![image](https://github.com/user-attachments/assets/506af335-d952-4598-a986-2879524c912b)
 
 
-Pour un tutoriel complet sur l'utilisation de l'application, nous vous invitons à visionner notre vidéo explicative en cliquant sur le lien ci-dessous
+Pour un tutoriel complet sur l'utilisation de l'application, nous vous invitons à visionner notre vidéo explicative en cliquant sur le lien ci-dessous:
+
+https://youtu.be/qKJapa4DgGE
 
 
 
