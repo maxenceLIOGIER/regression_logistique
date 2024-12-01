@@ -6,13 +6,14 @@ To install the package, make sure you have `devtools` installed. Then run the fo
 
 ```r
 install.packages("devtools")
-devtools::install_github("username/LogisticRegression")
+devtools::install_github("maxenceLIOGIER/regression_logistique")
 ```
 
 ## 2. Loading and Preparing Data
 For demonstration purposes, we will use a dataset `df` where `X` contains the feature variables and `y` contains the target variable.
 
 ```r
+library(LogisticRegression)
 # Load your dataset
 df <- read.csv("your_dataset.csv")
 
@@ -68,7 +69,7 @@ y_pred <- model$predict(X_test)
 print(model$test(y_test, y_pred, confusion_matrix = TRUE))
 ```
 
-## 7. (Optional) Variable Importance
+## 7. Variable Importance
 You can also check the importance of each feature in the model using the `var_importance()` method:
 
 ```r
@@ -76,5 +77,4 @@ You can also check the importance of each feature in the model using the `var_im
 model$var_importance(graph = TRUE)
 ```
 
-## Conclusion
-This basic tutorial walks you through the process of training and evaluating a logistic regression model using our `LogisticRegression` package. For more detailed guidance, refer to the documentation or explore additional functions like `var_importance()` for more in-depth analysis.
+
