@@ -54,7 +54,7 @@ ui <- dashboardPage(
                            div(
                              class = "profile-text",
                              span("Souraya Ahmed", class = "profile-name"),
-                             p(icon("envelope", class = "email-icon"), "sourayatahmed18@gmail.com")
+                             p(icon("envelope", class = "email-icon"), "aa.souraya@univ-lyon2.fr")
                            )
                          )
                        )
@@ -66,8 +66,8 @@ ui <- dashboardPage(
                            icon("smile", class = "profile-icon"),
                            div(
                              class = "profile-text",
-                             span("Maxence", class = "profile-name"),
-                             p(icon("envelope", class = "email-icon"), "maxencen@mail.com")
+                             span("Maxence LIOGIER", class = "profile-name"),
+                             p(icon("envelope", class = "email-icon"), "maxence.liogier@univ-lyon2.fr")
                            )
                          )
                        )
@@ -80,7 +80,7 @@ ui <- dashboardPage(
                            div(
                              class = "profile-text",
                              span("Yacine Ayachi", class = "profile-name"),
-                             p(icon("envelope", class = "email-icon"), "yacine@mail.com")
+                             p(icon("envelope", class = "email-icon"), "yacine.ayachi@univ-lyon2.fr")
                            )
                          )
                        )

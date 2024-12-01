@@ -8,6 +8,13 @@ library(shinyWidgets)      # Widgets stylisés supplémentaires
 library(readr)             # Lecture des fichiers CSV
 library(readxl)            # Lecture des fichiers Excel
 library(stringr)           # Manipulation de chaînes de caractères
+
+
+
+if (!requireNamespace("LogisticRegression", quietly = TRUE)) {
+  devtools::install_github("maxenceLIOGIER/regression_logistique")
+}
+
 library(LogisticRegression)# Notre package
 
 # Bibliothèques pour les visualisations
