@@ -61,13 +61,13 @@ Fournit les distibutions des variables.
 
 
 **Modélisation et Prédiction** :
-C'est cette page qui utilise notre package modèle de régression logistique multinomiale, il permet de split, de fit , faire des prédictions et d'évaluer les performances du modèle.
+Cette page utilise notre package de régression logistique multinomiale pour effectuer l'ensemble du processus de modélisation. Elle permet de diviser les données (split), d'ajuster le modèle (fit), de réaliser des prédictions et d'évaluer les performances du modèle à l'aide de diverses métriques.
 
 
 ![image](https://github.com/user-attachments/assets/506af335-d952-4598-a986-2879524c912b)
 
 
-Pour un tuto complet de l'application , je vous prie de lire de regarder notre video en cliquant sur ce lien
+Pour un tutoriel complet sur l'utilisation de l'application, nous vous invitons à visionner notre vidéo explicative en cliquant sur le lien ci-dessous
 
 
 
