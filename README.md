@@ -39,18 +39,18 @@ Voici l'architecture dossier de l'application shiny :
 ### Fonctionnalités de l'application Shiny
 L'application Shiny permet de naviguer à travers plusieurs pages grâce à une barre latérale. Les principales pages de l'application sont les suivantes :
 
-**Accueil** 
+**Accueil** :
 Page d'introduction qui présente le projet, les fonctionnalités disponibles et l'équipe.
 
 
 ![image](https://github.com/user-attachments/assets/fb4b6db0-da21-435e-8c00-c9fdac3be735)
 
-**Lecture des données** 
+**Lecture des données** :
 Permet de télécharger des fichiers CSV ou Excel et de préparer les données pour l'analyse. cette page contient 3 onglet , l'onglet de chargement des données et pretraitement des données , l'onglet structure des donées qui reprend le fonction str de R afin de vverifier la transformation des données si besoin , l'onglet résumé statistique qui fait un summary des onnés
 ![image](https://github.com/user-attachments/assets/35a99d81-5656-4e35-a9e6-b8a18da710fb)
 
 
-**Statistiques et Visualisation**
+**Statistiques et Visualisation**:
 Fournit les distibutions des variables.
 ![image](https://github.com/user-attachments/assets/f119bae2-73f7-4c3f-a2ad-bc82386a0c38)
 
@@ -61,7 +61,8 @@ Fournit les distibutions des variables.
 C'est cette page qui utilise notre package modèle de régression logistique multinomiale, il permet de split, de fit , faire des prédictions et d'évaluer les performances du modèle.
 
 
-![image](https://github.com/user-attachments/assets/2ef52b90-0e0b-4085-ab5b-79bc9ce96a43)
+![image](https://github.com/user-attachments/assets/506af335-d952-4598-a986-2879524c912b)
+
 
 Pour un tuto complet de l'application , je vous prie de lire de regarder notre video en cliquant sur ce lien
 
