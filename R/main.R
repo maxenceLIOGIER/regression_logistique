@@ -21,6 +21,7 @@
 #'
 #' @importFrom R6 R6Class
 #' @import ggplot2
+#' @import XML
 #' 
 #' @export
 LogisticRegression <- R6Class("LogisticRegression",
