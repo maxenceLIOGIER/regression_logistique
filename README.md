@@ -43,24 +43,30 @@ Voici l'architecture dossier de l'application shiny :
 L'application Shiny permet de naviguer à travers plusieurs pages grâce à une barre latérale. Les principales pages de l'application sont les suivantes :
 
 **Accueil** :
+
 Page d'introduction qui présente le projet, les fonctionnalités disponibles et l'équipe.
 
 
 ![image](https://github.com/user-attachments/assets/fb4b6db0-da21-435e-8c00-c9fdac3be735)
 
 **Lecture des données** :
-Permet de télécharger des fichiers CSV ou Excel et de préparer les données pour l'analyse. cette page contient 3 onglet , l'onglet de chargement des données et pretraitement des données , l'onglet structure des donées qui reprend le fonction str de R afin de vverifier la transformation des données si besoin , l'onglet résumé statistique qui fait un summary des onnés
+
+Permet de télécharger des fichiers CSV ou Excel et de préparer les données pour l'analyse. cette page contient 3 onglet , l'onglet de chargement des données et pretraitement des données , l'onglet structure des donées qui reprend le fonction str de R afin de vverifier la transformation des données si besoin , l'onglet résumé statistique qui fait un summary des données
+
 ![image](https://github.com/user-attachments/assets/35a99d81-5656-4e35-a9e6-b8a18da710fb)
 
 
 **Statistiques et Visualisation**:
+
 Fournit les distibutions des variables.
+
 ![image](https://github.com/user-attachments/assets/f119bae2-73f7-4c3f-a2ad-bc82386a0c38)
 
 
 
 
 **Modélisation et Prédiction** :
+
 Cette page utilise notre package de régression logistique multinomiale pour effectuer l'ensemble du processus de modélisation. Elle permet de diviser les données (split), d'ajuster le modèle (fit), de réaliser des prédictions et d'évaluer les performances du modèle à l'aide de diverses métriques.
 
 
