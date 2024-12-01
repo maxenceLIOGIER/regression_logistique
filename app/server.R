@@ -138,7 +138,7 @@ server <- function(input, output, session) {
 
   
   
-  #page 3 modelisation predictio 
+  #page 3 modelisation prediction
   # Sélection automatique des variables explicatives basées sur l'importance
   observe({
     req(data())
@@ -254,26 +254,35 @@ server <- function(input, output, session) {
   
   
   # Prédictions
+
   observeEvent(input$run_prediction, {
     req(reactiveModel(), reactiveTestData())
     
     model <- reactiveModel()
     test_data <- reactiveTestData()
     
-    
-    # Vérification que le modèle est bien une instance de LogisticRegression
-
-    # Préparation des prédicteurs
+    # Préparation des prédicteurs X (tout sauf la variable cible)
     X <- test_data[, setdiff(names(test_data), input$target), drop = FALSE]
     
     # Prédictions des classes
     pred_classes <- model$predict(X)
-  
     
-    output$prediction_results <- renderPrint({
-      confusion <- (model$test(as.factor(pred_classes), test_data[[input$target]], confusion_matrix = TRUE))
-      confusion
- 
+    # Affichage de la matrice de confusion
+    output$confusion_matrix <- renderPrint({
+      confusion <- model$test(as.factor(pred_classes), test_data[[input$target]], confusion_matrix = TRUE)
+      cat("Matrice de Confusion:\n")
+      print(confusion)  # Afficher la confusion
+    })
+    
+    # Affichage des probabilités des classes
+    output$probabilities <- renderPrint({
+      proba <- model$predict_proba(X, model$theta)  # Calcul des probabilités
+      prob_df <- as.data.frame(proba)
+      
+      # Afficher uniquement les 5 premières lignes des probabilités
+      prob_head <- head(prob_df, 5)
+      cat("Probabilités des classes pour les 5 premiers individus:\n")
+      print(prob_head)  # Afficher les probabilités des 5 premiers individus
     })
   })
   

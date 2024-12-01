@@ -7,11 +7,8 @@ library(shinyWidgets)      # Widgets stylisés supplémentaires
 # Bibliothèques pour la gestion des données
 library(readr)             # Lecture des fichiers CSV
 library(readxl)            # Lecture des fichiers Excel
-library(dplyr)             # Manipulation de données
-library(tidyr)             # Organisation des données
 library(stringr)           # Manipulation de chaînes de caractères
-library(nnet)
-library(LogisticRegression)
+library(LogisticRegression)# Notre package
 
 # Bibliothèques pour les visualisations
 library(ggplot2)           # Graphiques de qualité
@@ -20,7 +17,7 @@ library(caret)             # Partition des données, métriques de performance
 
 # Bibliothèques pour les tableaux et les téléchargements
 library(DT)                # Tableaux interactifs
-library(data.table)        # Manipulation efficace de grandes données
+library(data.table)       
 library(writexl)           # Exportation des fichiers Excel
 
 # Bibliothèques pour les fonctionnalités supplémentaires

@@ -18,7 +18,7 @@ ui <- dashboardPage(
       # Page d'accueil
       tabItem(tabName = "accueil",
               fluidRow(
-                column(8,  # Partie texte (60%)
+                column(8,  
                        box(
                          title = "Application de Régression Logistique Multinomiale", status = "primary", solidHeader = TRUE, width = 12,
                          p("Cette application a été conçue pour démontrer les fonctionnalités de notre package 
@@ -35,7 +35,7 @@ ui <- dashboardPage(
                          p("Utilisez le menu à gauche pour naviguer à travers l'application.")
                        )
                 ),
-                column(4,  # Partie image (40%)
+                column(4,  
                        div(
                          style = "text-align: center;",
                          img(src = "image.jpg", 
@@ -239,11 +239,15 @@ ui <- dashboardPage(
                                     fileInput("new_data", "Importer des données pour la prédiction"),
                                     actionButton("run_prediction", "Faire les prédictions", class = "btn btn-primary"),
                                     br(),
-                                    verbatimTextOutput("prediction_results")
+                                    h4("Matrice de Confusion"),
+                                    verbatimTextOutput("confusion_matrix"),  # Affichage de la matrice de confusion
+                                    h4("Probabilités des classes"),
+                                    verbatimTextOutput("probabilities")  # Affichage des probabilités
                                   )
                            )
                          )
                 ),
+                
                 
                 # Tab 4: Importance des variables
                 tabPanel("4. Importance des variables",
