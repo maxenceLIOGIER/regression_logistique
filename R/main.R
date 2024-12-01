@@ -324,25 +324,3 @@ LogisticRegression <- R6Class("LogisticRegression",
     
   )
 )
-
-
-# Exemple d'utilisation
-set.seed(123)
-data(iris)
-
-# Séparation des données en train et test
-X <- iris[, -c(5)]
-y <- iris$Species
-
-index <- sample(seq_len(nrow(iris)), nrow(iris) * 0.7)
-X_train <- X[index, ] # n x p
-y_train <- y[index] # nF x 1
-X_test <- X[-index, ]
-y_test <- y[-index]
-
-# Entraînement du modèle
-model <- LogisticRegression$new(penalty = NULL, lambda = 0,
-                                l1_ratio = 0.5)
-model <- model$fit(X_train, y_train)
-model$summary()
-model$export_pmml(target_name = "Species")
