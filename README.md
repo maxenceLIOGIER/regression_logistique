@@ -2,7 +2,7 @@
 Ce projet a pour but de créer un package R permettant de mettre au point un algorithme de régression logistique.
 L'optimisation de la fonction de coût se fera à l'aide d'une descente de gradient. Pour illsutrer le fonctionnement de notre package on a construit une application Rshiny. 
 
-## Installation du package sur R
+## 1. Installation du package sur R
 
 Pour installer notre package sur R, suivez les étapes ci-dessous :
 
@@ -22,7 +22,7 @@ devtools::install_github("votre_nom_utilisateur/votre_repo")
 Pour plus de détails, vous sur le fonctionnement du package vous pouvez lire le tuorial.md en anglais qui explique à peu près tout de A à Z.
 
 
-## Application shiny 
+## 2. Application R shiny 
 Voici l'architecture dossier de l'application shiny :
 
 ```r
@@ -39,26 +39,27 @@ Voici l'architecture dossier de l'application shiny :
     └── images.jpg     # Image utilisée dans l'application
 
 ```
-Pour exécuter l'application Shiny, placez-vous dans le répertoire contenant **global.R**, **ui.R** et **server.R**, puis lancez l'application avec **runApp()**. Assurez-vous que tous les packages mentionnés dans **global.R** sont installés sur votre machine avec install.packages().
+Pour exécuter l'application Shiny, placez-vous dans le répertoire contenant **global.R**, **ui.R** et **server.R**, puis lancez l'application avec `runApp()`. Assurez-vous que tous les packages mentionnés dans **global.R** sont installés sur votre machine avec install.packages().
 
 ### Fonctionnalités de l'application Shiny
 L'application Shiny permet de naviguer à travers plusieurs pages grâce à une barre latérale. Les principales pages de l'application sont les suivantes :
 
-**Accueil** :
+**1. Accueil** :
 
 Page d'introduction qui présente le projet, les fonctionnalités disponibles et l'équipe.
 
 
 ![image](https://github.com/user-attachments/assets/fb4b6db0-da21-435e-8c00-c9fdac3be735)
 
-**Lecture des données** :
+**2. Lecture des données** :
 
-Permet de télécharger des fichiers CSV ou Excel et de préparer les données pour l'analyse. cette page contient 3 onglet , l'onglet de chargement des données et pretraitement des données , l'onglet structure des donées qui reprend le fonction str de R afin de vverifier la transformation des données si besoin , l'onglet résumé statistique qui fait un summary des données
+Cette page permet de télécharger des fichiers CSV ou Excel et de préparer les données pour l'analyse. Elle contient trois onglets : l'onglet **Chargement et Prétraitement des données**, l'onglet **Structure des données** qui affiche la fonction `str()` de R pour vérifier la transformation des données si nécessaire, et l'onglet **Résumé statistique** qui génère un résumé statistique des données à l'aide de la fonction `summary()`.
+
 
 ![image](https://github.com/user-attachments/assets/35a99d81-5656-4e35-a9e6-b8a18da710fb)
 
 
-**Statistiques et Visualisation**:
+**3. Statistiques et Visualisation**:
 
 Fournit les distibutions des variables.
 
@@ -67,7 +68,7 @@ Fournit les distibutions des variables.
 
 
 
-**Modélisation et Prédiction** :
+**4. Modélisation et Prédiction** :
 
 Cette page utilise notre package de régression logistique multinomiale pour effectuer l'ensemble du processus de modélisation. Elle permet de diviser les données (split), d'ajuster le modèle (fit), de réaliser des prédictions et d'évaluer les performances du modèle à l'aide de diverses métriques.
 
