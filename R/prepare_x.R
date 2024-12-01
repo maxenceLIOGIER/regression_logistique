@@ -18,6 +18,10 @@ type_variable <- function(df) {
 #' @param X : data.frame containing the data
 #' @return encoded and normalized X
 prepare_x <- function(X) {
+  # Check for missing values
+  if (anyNA(X)) {
+    stop("Please handle missing values in your dataset before using this function.")
+  }
   # Determine qualitative and quantitative variables
   types_variables <- type_variable(X)
   quali <- types_variables$qualitatives
