@@ -1,0 +1,33 @@
+<PMML xmlns:xmlns="http://www.dmg.org/PMML-4_2">
+  <Header>
+    <Application name="Custom Logistic Regression in R" version="1.0"/>
+  </Header>
+  <RegressionModel functionName="classification" modelName="LogisticRegression" algorithmName="multinomialLogisticRegression">
+    <MiningSchema>
+      <MiningField name="intercept" usageType="active"/>
+      <MiningField name="Sepal.Length" usageType="active"/>
+      <MiningField name="Sepal.Width" usageType="active"/>
+      <MiningField name="Petal.Length" usageType="active"/>
+      <MiningField name="Petal.Width" usageType="active"/>
+      <MiningField name="Species" usageType="target"/>
+    </MiningSchema>
+    <RegressionTable intercept="-0.496021520708635" targetCategory="setosa">
+      <NumericPredictor name="Sepal.Length" coefficient="-0.558099925867483"/>
+      <NumericPredictor name="Sepal.Width" coefficient="0.578811391362875"/>
+      <NumericPredictor name="Petal.Length" coefficient="-0.813080347096016"/>
+      <NumericPredictor name="Petal.Width" coefficient="-0.784137025836166"/>
+    </RegressionTable>
+    <RegressionTable intercept="-0.519086014641971" targetCategory="virginica">
+      <NumericPredictor name="Sepal.Length" coefficient="0.46789922581957"/>
+      <NumericPredictor name="Sepal.Width" coefficient="-0.0226059057864975"/>
+      <NumericPredictor name="Petal.Length" coefficient="0.609235227355037"/>
+      <NumericPredictor name="Petal.Width" coefficient="0.729810863292735"/>
+    </RegressionTable>
+    <RegressionTable intercept="-0.580215931324462" targetCategory="versicolor">
+      <NumericPredictor name="Sepal.Length" coefficient="0.0270096961231398"/>
+      <NumericPredictor name="Sepal.Width" coefficient="-0.51620222540355"/>
+      <NumericPredictor name="Petal.Length" coefficient="0.152499168411489"/>
+      <NumericPredictor name="Petal.Width" coefficient="0.00695669427463827"/>
+    </RegressionTable>
+  </RegressionModel>
+</PMML>

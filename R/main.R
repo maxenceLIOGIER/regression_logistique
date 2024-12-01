@@ -273,55 +273,76 @@ LogisticRegression <- R6Class("LogisticRegression",
 
       return(importance)
     },
-    #' @description Exports the trained model to PMML format.
-    #'              The PMML includes information about the model coefficients, features, and classes.
-    #' @param file_path (character) Optional file path to save the PMML file. If NULL, returns the PMML object.
-    #' @return (character or pmml) The PMML file content or a saved PMML file.
+    #' @description Exports the Logistic Regression model to PMML format.
+    #' @param file_path (character) Path to save the PMML file. Default is "model.pmml".
+    #' @param target_name (character) The name of the target variable. Default is NULL, which assumes the last column is the target.
+    #' @return Saves the PMML file at the specified location.
     #' @method LogisticRegression export_pmml
-    export_pmml = function(file_path = NULL) {
+    export_pmml = function(file_path = "model.pmml", target_name) {
       if (is.null(self$theta)) {
-        stop("The model is not trained yet.")
+        stop("The model is not trained yet. Please train the model before exporting.")
       }
       
-      library(pmml)
+      # Create PMML structure
+      pmml_doc <- XML::newXMLNode("PMML", namespaceDefinitions = c("xmlns" = "http://www.dmg.org/PMML-4_2"))
+      XML::newXMLNode("Header", parent = pmml_doc, 
+                      .children = list(XML::newXMLNode("Application", attrs = c(name = "Custom Logistic Regression in R", version = "1.0"))))
       
-      # Ensure column and class names are available
-      col_names <- rownames(self$theta)
-      class_names <- colnames(self$theta)
+      # RegressionModel node
+      reg_model <- XML::newXMLNode("RegressionModel", parent = pmml_doc, 
+                                   attrs = c(functionName = "classification", modelName = "LogisticRegression", algorithmName = "multinomialLogisticRegression"))
       
-      # Create the PMML model
-      pmml_model <- pmml(
-        data = NULL,  # We don't include the training data in the PMML
-        model.name = "Multinomial Logistic Regression",
-        app.name = "LogisticRegression Package",
-        description = "A multinomial logistic regression model trained using R6.",
-        function.name = "classification",
-        model = list(
-          coefficients = self$theta,
-          classes = class_names,
-          features = col_names
-        ),
-        # Additional details
-        transforms = NULL,
-        regression = list(
-          regressionTable = lapply(seq_along(class_names), function(k) {
-            list(
-              intercept = self$theta[1, k],
-              coefficients = setNames(as.list(self$theta[-1, k]), col_names[-1]),
-              targetCategory = class_names[k]
-            )
-          })
-        )
-      )
-      
-      # Save or return the PMML
-      if (!is.null(file_path)) {
-        saveXML(pmml_model, file = file_path)
-        message("PMML model saved to: ", file_path)
-        return(file_path)
-      } else {
-        return(pmml_model)
+      # MiningSchema
+      mining_schema <- XML::newXMLNode("MiningSchema", parent = reg_model)
+      for (feature in rownames(self$theta)) {
+        XML::newXMLNode("MiningField", attrs = c(name = feature, usageType = "active"), parent = mining_schema)
       }
+      
+      # Dynamically use the provided target name
+      XML::newXMLNode("MiningField", attrs = c(name = target_name, usageType = "target"), parent = mining_schema)
+      
+      # RegressionTable for each class
+      for (k in seq_len(ncol(self$theta))) {
+        class_name <- colnames(self$theta)[k]
+        intercept <- self$theta[1, k]  # Intercept term
+        regression_table <- XML::newXMLNode("RegressionTable", parent = reg_model, attrs = c(intercept = intercept, targetCategory = class_name))
+        
+        for (i in 2:nrow(self$theta)) {  # Skip intercept (row 1)
+          feature <- rownames(self$theta)[i]
+          coefficient <- self$theta[i, k]
+          XML::newXMLNode("NumericPredictor", parent = regression_table, attrs = c(name = feature, coefficient = coefficient))
+        }
+      }
+      
+      # Save the PMML to file
+      XML::saveXML(pmml_doc, file = file_path)
+      message("PMML model exported to: ", file_path)
     }
+    
+    
+    
   )
 )
+
+
+# Exemple d'utilisation
+set.seed(123)
+data(iris)
+
+# Séparation des données en train et test
+X <- iris[, -c(5)]
+y <- iris$Species
+
+index <- sample(seq_len(nrow(iris)), nrow(iris) * 0.7)
+X_train <- X[index, ] # n x p
+y_train <- y[index] # nF x 1
+X_test <- X[-index, ]
+y_test <- y[-index]
+
+# Entraînement du modèle
+model <- LogisticRegression$new(penalty = NULL, lambda = 0,
+                                l1_ratio = 0.5)
+model <- model$fit(X_train, y_train)
+model$summary()
+pmml_content <- model$export_pmml(target_name = "Species")
+print(pmml_content)

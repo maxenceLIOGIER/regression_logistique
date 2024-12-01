@@ -225,21 +225,22 @@ The sum is equal to 100\%
 \if{html}{\out{<a id="method-LogisticRegression-export_pmml"></a>}}
 \if{latex}{\out{\hypertarget{method-LogisticRegression-export_pmml}{}}}
 \subsection{Method \code{export_pmml()}}{
-Exports the trained model to PMML format.
-The PMML includes information about the model coefficients, features, and classes.
+Exports the Logistic Regression model to PMML format.
 \subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{LogisticRegression$export_pmml(file_path = NULL)}\if{html}{\out{</div>}}
+\if{html}{\out{<div class="r">}}\preformatted{LogisticRegression$export_pmml(file_path = "model.pmml", target_name)}\if{html}{\out{</div>}}
 }
 
 \subsection{Arguments}{
 \if{html}{\out{<div class="arguments">}}
 \describe{
-\item{\code{file_path}}{(character) Optional file path to save the PMML file. If NULL, returns the PMML object.}
+\item{\code{file_path}}{(character) Path to save the PMML file. Default is "model.pmml".}
+
+\item{\code{target_name}}{(character) The name of the target variable. Default is NULL, which assumes the last column is the target.}
 }
 \if{html}{\out{</div>}}
 }
 \subsection{Returns}{
-(character or pmml) The PMML file content or a saved PMML file.
+Saves the PMML file at the specified location.
 }
 }
 \if{html}{\out{<hr>}}
