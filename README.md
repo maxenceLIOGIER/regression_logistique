@@ -6,18 +6,22 @@ L'optimisation de la fonction de coût se fera à l'aide d'une descente de gradi
 
 Pour installer notre package sur R, suivez les étapes ci-dessous :
 
-### Étape 1 : Installer le package `devtools`
+### Étape 1 : Installer et charger le package `devtools`
 
-Avant d'installer le package, vous devez vous assurer que le package `devtools` est installé. Si ce n'est pas encore fait, vous pouvez l'installer en utilisant la commande suivante :
+Avant d'installer le package, vous devez vous assurer que le package `devtools` est installé. Si ce n'est pas encore fait, vous pouvez l'installer en utilisant les commandes suivantes :
 
 ```r
 install.packages("devtools")
+library(devtools)
 ```
-### Étape 2 : Installer le package depuis GitHub
+### Étape 2 : Installer Rtools
+aller sur le lien: https://cran.r-project.org/bin/windows/Rtools/rtools44/rtools.html télécharger Rtools44 installer puis éxectuer le.
+
+### Étape 3 : Installer le package depuis GitHub
 Une fois devtools installé, vous pouvez installer notre package directement depuis GitHub avec la commande suivante :
 
 ```r
-devtools::install_github("votre_nom_utilisateur/votre_repo")
+install_github("votre_nom_utilisateur/votre_repo")
 ```
 Pour plus de détails, vous sur le fonctionnement du package vous pouvez lire le tuorial.md en anglais qui explique à peu près tout de A à Z.
 
