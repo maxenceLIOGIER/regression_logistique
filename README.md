@@ -23,6 +23,8 @@ devtools::install_github("votre_nom_utilisateur/votre_repo")
 
 ## Application shiny 
 Voici l'architecture dossier de l'application shiny :
+
+```r
 /app
 │
 ├── /global            # Contient tous les packages utilisés dans le projet
@@ -35,6 +37,7 @@ Voici l'architecture dossier de l'application shiny :
     ├── style.css      # Le fichier CSS pour la mise en forme de l'application
     └── images.jpg     # Image utilisée dans l'application
 
+```
 
 ### Fonctionnalités de l'application Shiny
 L'application Shiny permet de naviguer à travers plusieurs pages grâce à une barre latérale. Les principales pages de l'application sont les suivantes :
