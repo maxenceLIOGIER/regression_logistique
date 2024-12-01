@@ -14,8 +14,7 @@
 #' @import parallel
 #' @include descente_gradient.R
 reg_multinomiale <- function(X, y, nb_iters, alpha,
-                             penalty, lambda, l1_ratio) {
-  X_new <- as.matrix(prepare_x(X))
+                             penalty, lambda, l1_ratio) {X_new <- as.matrix(prepare_x(X))
   classes_uniques <- unique(y)
   K <- length(classes_uniques)
   n <- ncol(X_new)

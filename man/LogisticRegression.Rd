@@ -29,6 +29,8 @@ A class for performing multinomial logistic regression using gradient descent.
 \item{\code{l1_ratio}}{(numeric) The ratio of L1 regularization in elasticnet. Default is 0.}
 
 \item{\code{summary_values}}{(vector) A vector containing the log-likelihood and AIC values.}
+
+\item{\code{is_too_big}}{(logical) Whether the dataset is too large to calculate p-values}
 }
 \if{html}{\out{</div>}}
 }
