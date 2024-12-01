@@ -45,6 +45,7 @@ A class for performing multinomial logistic regression using gradient descent.
 \item \href{#method-LogisticRegression-print}{\code{LogisticRegression$print()}}
 \item \href{#method-LogisticRegression-summary}{\code{LogisticRegression$summary()}}
 \item \href{#method-LogisticRegression-var_importance}{\code{LogisticRegression$var_importance()}}
+\item \href{#method-LogisticRegression-export_pmml}{\code{LogisticRegression$export_pmml()}}
 \item \href{#method-LogisticRegression-clone}{\code{LogisticRegression$clone()}}
 }
 }
@@ -218,6 +219,27 @@ Computes the importance of the variables based on the trained model.
 \subsection{Returns}{
 (vector) A vector of the relative importance of each variable.
 The sum is equal to 100\%
+}
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-LogisticRegression-export_pmml"></a>}}
+\if{latex}{\out{\hypertarget{method-LogisticRegression-export_pmml}{}}}
+\subsection{Method \code{export_pmml()}}{
+Exports the trained model to PMML format.
+The PMML includes information about the model coefficients, features, and classes.
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{LogisticRegression$export_pmml(file_path = NULL)}\if{html}{\out{</div>}}
+}
+
+\subsection{Arguments}{
+\if{html}{\out{<div class="arguments">}}
+\describe{
+\item{\code{file_path}}{(character) Optional file path to save the PMML file. If NULL, returns the PMML object.}
+}
+\if{html}{\out{</div>}}
+}
+\subsection{Returns}{
+(character or pmml) The PMML file content or a saved PMML file.
 }
 }
 \if{html}{\out{<hr>}}

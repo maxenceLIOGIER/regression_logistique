@@ -272,6 +272,56 @@ LogisticRegression <- R6Class("LogisticRegression",
       }
 
       return(importance)
+    },
+    #' @description Exports the trained model to PMML format.
+    #'              The PMML includes information about the model coefficients, features, and classes.
+    #' @param file_path (character) Optional file path to save the PMML file. If NULL, returns the PMML object.
+    #' @return (character or pmml) The PMML file content or a saved PMML file.
+    #' @method LogisticRegression export_pmml
+    export_pmml = function(file_path = NULL) {
+      if (is.null(self$theta)) {
+        stop("The model is not trained yet.")
+      }
+      
+      library(pmml)
+      
+      # Ensure column and class names are available
+      col_names <- rownames(self$theta)
+      class_names <- colnames(self$theta)
+      
+      # Create the PMML model
+      pmml_model <- pmml(
+        data = NULL,  # We don't include the training data in the PMML
+        model.name = "Multinomial Logistic Regression",
+        app.name = "LogisticRegression Package",
+        description = "A multinomial logistic regression model trained using R6.",
+        function.name = "classification",
+        model = list(
+          coefficients = self$theta,
+          classes = class_names,
+          features = col_names
+        ),
+        # Additional details
+        transforms = NULL,
+        regression = list(
+          regressionTable = lapply(seq_along(class_names), function(k) {
+            list(
+              intercept = self$theta[1, k],
+              coefficients = setNames(as.list(self$theta[-1, k]), col_names[-1]),
+              targetCategory = class_names[k]
+            )
+          })
+        )
+      )
+      
+      # Save or return the PMML
+      if (!is.null(file_path)) {
+        saveXML(pmml_model, file = file_path)
+        message("PMML model saved to: ", file_path)
+        return(file_path)
+      } else {
+        return(pmml_model)
+      }
     }
   )
 )
