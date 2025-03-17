@@ -78,6 +78,7 @@ Page d'introduction qui présente le projet, les fonctionnalités disponibles et
 
 ![image](https://github.com/user-attachments/assets/fb4b6db0-da21-435e-8c00-c9fdac3be735)
 
+
 **2. Lecture des données** :
 
 Cette page permet de télécharger des fichiers CSV ou Excel et de préparer les données pour l'analyse. Elle contient trois onglets : l'onglet **Chargement et Prétraitement des données**, l'onglet **Structure des données** qui affiche la fonction `str()` de R pour vérifier la transformation des données si nécessaire, et l'onglet **Résumé statistique** qui génère un résumé statistique des données à l'aide de la fonction `summary()`.
@@ -93,19 +94,19 @@ Fournit les distibutions des variables.
 ![image](https://github.com/user-attachments/assets/f119bae2-73f7-4c3f-a2ad-bc82386a0c38)
 
 
-
-
 **4. Modélisation et Prédiction** :
 
 Cette page utilise notre package de régression logistique multinomiale pour effectuer l'ensemble du processus de modélisation. Elle permet de diviser les données (split), d'ajuster le modèle (fit), de réaliser des prédictions et d'évaluer les performances du modèle à l'aide de diverses métriques.
 
-
 ![image](https://github.com/user-attachments/assets/506af335-d952-4598-a986-2879524c912b)
 
 
-Pour un tutoriel complet sur l'utilisation de l'application, nous vous invitons à visionner notre vidéo explicative en cliquant sur le lien ci-dessous:
-
-https://youtu.be/qKJapa4DgGE
+Pour un tutoriel complet sur l'utilisation de l'application, nous vous invitons à visionner notre vidéo explicative en cliquant sur ce lien : https://youtu.be/qKJapa4DgGE
 
 
+**5. Limites Connues** :
+
+- **Lenteur** : Le traitement est lent sur de grandes bases de données. Une optimisation de l'algo de descente de gradient devrait être effectuée pour résoudre ce problème.
+- **Erreurs sur certains types de variables** : Certains types de variables posent parfois problème à cause d'une erreur de traitement.
+- **Calcul du predict et de l'importances des variables** : Les traitements ne sont pas cohérents.
 
